@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bài trắc nghiệm</title>
+</head>
+<body>
+  <h2>Câu hỏi 1: Thủ đô của Việt Nam là gì?</h2>
+  <form id="quiz1">
+    <input type="radio" name="answer1" value="Hà Nội"> Hà Nội<br>
+    <input type="radio" name="answer1" value="Hồ Chí Minh"> Hồ Chí Minh<br>
+    <input type="radio" name="answer1" value="Đà Nẵng"> Đà Nẵng<br>
+    <input type="radio" name="answer1" value="Huế"> Huế<br>
+  </form>
+  <p id="result1"></p>
+
+  <h2>Câu hỏi 2: 2 + 2 bằng bao nhiêu?</h2>
+  <form id="quiz2">
+    <input type="radio" name="answer2" value="3"> 3<br>
+    <input type="radio" name="answer2" value="4"> 4<br>
+    <input type="radio" name="answer2" value="5"> 5<br>
+    <input type="radio" name="answer2" value="6"> 6<br>
+  </form>
+  <p id="result2"></p>
+
+  <button type="button" onclick="checkAll()">Kiểm tra tất cả</button>
+
+  <script>
+    function checkAll() {
+      // Câu 1
+      const answers1 = document.getElementsByName("answer1");
+      let selected1 = null;
+      for (let i = 0; i < answers1.length; i++) {
+        if (answers1[i].checked) {
+          selected1 = answers1[i].value;
+          break;
+        }
+      }
+      if (selected1 === null) {
+        document.getElementById("result1").innerText = "Bạn chưa chọn đáp án!";
+      } else if (selected1 === "Hà Nội") {
+        document.getElementById("result1").innerText = "Câu 1: Chính xác!";
+      } else {
+        document.getElementById("result1").innerText = "Câu 1: Sai rồi!";
+      }
+
+      // Câu 2
+      const answers2 = document.getElementsByName("answer2");
+      let selected2 = null;
+      for (let i = 0; i < answers2.length; i++) {
+        if (answers2[i].checked) {
+          selected2 = answers2[i].value;
+          break;
+        }
+      }
+      if (selected2 === null) {
+        document.getElementById("result2").innerText = "Bạn chưa chọn đáp án!";
+      } else if (selected2 === "4") {
+        document.getElementById("result2").innerText = "Câu 2: Chính xác!";
+      } else {
+        document.getElementById("result2").innerText = "Câu 2: Sai rồi!";
+      }
+    }
+  </script>
+</body>
+</html>
