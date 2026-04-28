@@ -1,65 +1,425 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <title>Bài trắc nghiệm</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài Trắc Nghiệm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --card: #fffdf8;
+      --ink: #1a1209;
+      --accent: #c0392b;
+      --accent2: #e67e22;
+      --muted: #7a6f5e;
+      --border: #d9cfc0;
+      --correct: #27ae60;
+      --wrong: #c0392b;
+      --unanswered: #e67e22;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      max-width: 780px;
+      margin: 0 auto 2.5rem;
+      text-align: center;
+      border-bottom: 3px double var(--accent);
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .quiz-container {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      border-left: 4px solid var(--accent);
+      padding: 0.3rem 0.8rem;
+      background: #fdf0ed;
+      border-radius: 0 4px 4px 0;
+      margin-top: 1rem;
+    }
+
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 2px 3px 0 var(--border);
+      transition: box-shadow 0.2s;
+    }
+
+    .question-card:hover {
+      box-shadow: 3px 5px 0 #c9bfb0;
+    }
+
+    .question-text {
+      font-weight: 600;
+      font-size: 0.97rem;
+      margin-bottom: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .question-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 3px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+
+    .option-label:hover {
+      background: #f0e8d8;
+      border-color: var(--accent2);
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .option-label.correct {
+      background: #eafaf1;
+      border-color: var(--correct);
+      color: #1e6b42;
+      font-weight: 600;
+    }
+
+    .option-label.wrong {
+      background: #fdecec;
+      border-color: var(--wrong);
+      color: var(--wrong);
+      font-weight: 600;
+    }
+
+    .result-msg {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    .result-msg.correct { color: var(--correct); }
+    .result-msg.wrong { color: var(--wrong); }
+    .result-msg.unanswered { color: var(--unanswered); }
+
+    .footer-bar {
+      max-width: 780px;
+      margin: 2.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    #score-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--ink);
+      display: none;
+    }
+
+    #score-display span { color: var(--accent); }
+
+    .btn-check {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.85rem 2.8rem;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      box-shadow: 3px 4px 0 #8e1a10;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn-check:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 2px 0 #8e1a10;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 2px solid var(--muted);
+      color: var(--muted);
+      padding: 0.6rem 1.8rem;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover { border-color: var(--ink); color: var(--ink); }
+
+    .progress-bar-wrap {
+      width: 100%;
+      background: var(--border);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 20px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .progress-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: right;
+    }
+  </style>
 </head>
 <body>
-  <h2>Câu hỏi 1: Thủ đô của Việt Nam là gì?</h2>
-  <form id="quiz1">
-    <input type="radio" name="answer1" value="Hà Nội"> Hà Nội<br>
-    <input type="radio" name="answer1" value="Hồ Chí Minh"> Hồ Chí Minh<br>
-    <input type="radio" name="answer1" value="Đà Nẵng"> Đà Nẵng<br>
-    <input type="radio" name="answer1" value="Huế"> Huế<br>
-  </form>
-  <p id="result1"></p>
 
-  <h2>Câu hỏi 2: 2 + 2 bằng bao nhiêu?</h2>
-  <form id="quiz2">
-    <input type="radio" name="answer2" value="3"> 3<br>
-    <input type="radio" name="answer2" value="4"> 4<br>
-    <input type="radio" name="answer2" value="5"> 5<br>
-    <input type="radio" name="answer2" value="6"> 6<br>
-  </form>
-  <p id="result2"></p>
+<header>
+  <h1>📝 Bài Trắc Nghiệm Tiếng Anh</h1>
+  <p>50 câu hỏi &nbsp;·&nbsp; Phát âm, Trọng âm, Từ vựng & Ngữ pháp</p>
+</header>
 
-  <button type="button" onclick="checkAll()">Kiểm tra tất cả</button>
+<div class="quiz-container" id="quizContainer"></div>
 
-  <script>
-    function checkAll() {
-      // Câu 1
-      const answers1 = document.getElementsByName("answer1");
-      let selected1 = null;
-      for (let i = 0; i < answers1.length; i++) {
-        if (answers1[i].checked) {
-          selected1 = answers1[i].value;
-          break;
-        }
-      }
-      if (selected1 === null) {
-        document.getElementById("result1").innerText = "Bạn chưa chọn đáp án!";
-      } else if (selected1 === "Hà Nội") {
-        document.getElementById("result1").innerText = "Câu 1: Chính xác!";
+<div class="footer-bar">
+  <div class="progress-bar-wrap" style="max-width:780px;width:100%">
+    <div class="progress-bar-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 50 câu đã trả lời</div>
+  <button class="btn-check" onclick="checkAll()">✅ Kiểm tra tất cả</button>
+  <button class="btn-reset" onclick="resetAll()">🔄 Làm lại</button>
+  <div id="score-display"></div>
+</div>
+
+<script>
+const questions = [
+  // SECTION I – Pronunciation
+  { section: "I. Chọn từ có phần gạch chân phát âm khác với ba từ còn lại.", q: "Question 1. Phần gạch chân: ch", opts: ["chest", "teacher", "chef", "watch"], ans: 2 },
+  { q: "Question 2. Phần gạch chân: oo", opts: ["boost", "book", "cook", "look"], ans: 0 },
+  { q: "Question 3. Phần gạch chân: ou", opts: ["sound", "ground", "wound", "pound"], ans: 2 },
+  { q: "Question 4. Phần gạch chân: i", opts: ["mineral", "meditate", "arthritis", "limit"], ans: 2 },
+  { q: "Question 5. Phần gạch chân: o", opts: ["cyborg", "portion", "organise", "hologram"], ans: 2 },
+
+  // SECTION II – Stress
+  { section: "II. Chọn từ có trọng âm chính khác với ba từ còn lại.", q: "Question 6.", opts: ["diabetes", "expectancy", "memorial", "bacteria"], ans: 0 },
+  { q: "Question 7.", opts: ["remedy", "mineral", "nutrient", "infection"], ans: 3 },
+  { q: "Question 8.", opts: ["travel", "reduce", "provide", "allow"], ans: 0 },
+  { q: "Question 9.", opts: ["balance", "lifestyle", "hunger", "obese"], ans: 3 },
+  { q: "Question 10.", opts: ["lifestyle", "wellness", "treadmill", "replace"], ans: 3 },
+
+  // SECTION III – Grammar & Vocabulary
+  { section: "III. Chọn đáp án đúng nhất để hoàn thành câu.", q: "Question 11. I don't know why he hangs __________ with James, they've got nothing in common.", opts: ["off", "in", "out", "on"], ans: 2 },
+  { q: "Question 12. Sleep and the immune __________ are obviously connected.", opts: ["system", "construction", "instruction", "net"], ans: 0 },
+  { q: "Question 13. This win could prove to be a historic turning __________ in the fortunes of the team.", opts: ["event", "score", "mark", "point"], ans: 3 },
+  { q: "Question 14. __________ often clears up with a change in diet.", opts: ["Scars", "Acne", "Burns", "Toothache"], ans: 1 },
+  { q: "Question 15. In my view, he __________ peel the potatoes before mashing them and mixing in the butter and herbs.", opts: ["have to", "should", "need", "mustn't"], ans: 1 },
+  { q: "Question 16. You __________ take the bus - it's the easiest way to get there.", opts: ["don't need to", "will", "can't", "should"], ans: 3 },
+  { q: "Question 17. You __________ to pay for the tickets in advance.", opts: ["needn't", "had better not", "mustn't", "don't have"], ans: 3 },
+  { q: "Question 18. Passengers __________ undo their seat belts until the signs have been switched off.", opts: ["mustn't", "don't have to", "shouldn't", "had better not"], ans: 0 },
+  { q: "Question 19. They had to survive on a __________ of insects and berries when they got lost in a jungle.", opts: ["drink", "food", "diet", "meal"], ans: 2 },
+  { q: "Question 20. He's __________ good shape for someone who had surgery six months ago.", opts: ["in", "on", "off", "about"], ans: 0 },
+  { q: "Question 21. Yoga is said to __________ the wellness of the mind and body.", opts: ["promote", "manage", "take up", "track"], ans: 0 },
+  { q: "Question 22. This recipe for chicken porridge will be enough for four __________.", opts: ["parts", "servings", "pieces", "sections"], ans: 1 },
+  { q: "Question 23. Please join me in __________ Luke on an outstanding season.", opts: ["congratulating", "praising", "blaming", "thanking"], ans: 0 },
+  { q: "Question 24. No one could ever accuse this government __________ not caring about the poor.", opts: ["for", "in", "of", "on"], ans: 2 },
+  { q: "Question 25. He categorically denied __________ in an armed robbery.", opts: ["having involved", "to being involved", "involving", "having been involved"], ans: 3 },
+  { q: "Question 26. We stood on the bridge __________ the two halves of the city.", opts: ["connected", "to be connected", "to connect", "connecting"], ans: 3 },
+  { q: "Question 27. Pink Star was the only pink diamond __________ by De Beers in 1999 in South Africa.", opts: ["to be mined", "mined", "being mined", "mining"], ans: 0 },
+  { q: "Question 28. The car had carried him 500 miles before it broke __________.", opts: ["in", "up", "down", "off"], ans: 2 },
+  { q: "Question 29. While cleaning staff are busy __________ on one floor, they may suddenly need to be directed to another room.", opts: ["work", "to work", "working", "worked"], ans: 2 },
+  { q: "Question 30. I'm __________ some art classes at the moment.", opts: ["conducting", "taking", "carrying", "putting"], ans: 1 },
+  { q: "Question 31. The writer suffered __________ ill health for most of his life.", opts: ["about", "in", "from", "of"], ans: 2 },
+  { q: "Question 32. Try drinking ginger tea before travelling if you suffer __________ motion sickness.", opts: ["of", "from", "with", "on"], ans: 1 },
+  { q: "Question 33. It's common knowledge that you need to cut __________ salt, sugar and fatty foods to lose weight.", opts: ["out of", "down with", "up with", "down on"], ans: 3 },
+  { q: "Question 34. __________ is using digital technology to hurt someone else. It can include sending embarrassing videos or spreading rumours online.", opts: ["Cyberbullying", "Depression", "Racism", "Crime"], ans: 0 },
+  { q: "Question 35. The piano __________ at the moment belongs to my grandfather.", opts: ["mended", "being mended", "to be mended", "mending"], ans: 1 },
+  { q: "Question 36. Turn off the light after leaving the room, __________?", opts: ["shall we", "will you", "may I", "won't you"], ans: 3 },
+  { q: "Question 37. __________ we use more solar energy, the air will become cleaner and our health will be better.", opts: ["Unless", "As", "If", "Though"], ans: 2 },
+  { q: "Question 38. Visitors __________ enter the operating room.", opts: ["must", "have to", "mustn't", "don't have to"], ans: 2 },
+  { q: "Question 39. I think flying cars __________ a common mode of transportation in cities in the future.", opts: ["will become", "becomes", "becoming", "is going to become"], ans: 0 },
+  { q: "Question 40. He has some difficulty __________ people when they speak softly.", opts: ["heard", "hearing", "to hear", "hears"], ans: 1 },
+  { q: "Question 41. __________ the bottles, Mike poured the drinks for everyone.", opts: ["To open", "to have opened", "being opened", "having opened"], ans: 3 },
+  { q: "Question 42. Look at those loose solar panels! They __________ off the roof.", opts: ["will fall", "fall", "are going to fall", "will be fall"], ans: 2 },
+  { q: "Question 43. In the future, __________ roads will inform drivers about traffic conditions.", opts: ["3D printed", "digital", "moving", "floating"], ans: 1 },
+  { q: "Question 44. Some people experience __________ from the locals when they move to a new country.", opts: ["unemployment", "disease", "racism", "war"], ans: 2 },
+  { q: "Question 45. John has bad hay fever now; he also often gets a __________ nose in the winter.", opts: ["runny", "swollen", "sneezing", "bruised"], ans: 0 },
+  { q: "Question 46. Solar windows __________ energy from the sun.", opts: ["bring", "provide", "produce", "need"], ans: 2 },
+  { q: "Question 47. It's important to __________ laws to ensure equal opportunities for all the people despite their gender.", opts: ["pass", "offer", "provide", "give"], ans: 0 },
+  { q: "Question 48. Andy wants to be a __________ trainer when he leaves school.", opts: ["wellness", "lifestyle", "personal", "healthy"], ans: 2 },
+  { q: "Question 49. Ann is coughing a lot because she has a __________.", opts: ["sore throat", "chest infection", "hay fever", "rash"], ans: 1 },
+  { q: "Question 50. Ben has decided to __________ sugar in order to lose some weight.", opts: ["cut down on", "eat", "give up", "drink"], ans: 0 },
+];
+
+const optionLetters = ['A', 'B', 'C', 'D'];
+const container = document.getElementById('quizContainer');
+let answered = new Array(questions.length).fill(false);
+
+function buildQuiz() {
+  container.innerHTML = '';
+  questions.forEach((item, idx) => {
+    if (item.section) {
+      const sec = document.createElement('div');
+      sec.className = 'section-title';
+      sec.textContent = item.section;
+      container.appendChild(sec);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${idx}`;
+
+    const qText = document.createElement('div');
+    qText.className = 'question-text';
+    qText.innerHTML = `<span class="question-num">${idx + 1}</span> ${item.q}`;
+    card.appendChild(qText);
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
+
+    item.opts.forEach((opt, oi) => {
+      const lbl = document.createElement('label');
+      lbl.className = 'option-label';
+      lbl.id = `lbl-${idx}-${oi}`;
+      lbl.innerHTML = `<input type="radio" name="q${idx}" value="${oi}"> <strong>${optionLetters[oi]}.</strong> ${opt}`;
+      lbl.querySelector('input').addEventListener('change', () => updateProgress());
+      opts.appendChild(lbl);
+    });
+
+    card.appendChild(opts);
+
+    const res = document.createElement('div');
+    res.className = 'result-msg';
+    res.id = `res-${idx}`;
+    card.appendChild(res);
+
+    container.appendChild(card);
+  });
+}
+
+function updateProgress() {
+  let count = 0;
+  questions.forEach((_, idx) => {
+    const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+    if (sel) count++;
+  });
+  document.getElementById('progressLabel').textContent = `${count} / ${questions.length} câu đã trả lời`;
+  document.getElementById('progressFill').style.width = `${(count / questions.length) * 100}%`;
+}
+
+function checkAll() {
+  let correct = 0, unanswered = 0;
+
+  questions.forEach((item, idx) => {
+    const sel = document.querySelector(`input[name="q${idx}"]:checked`);
+    const resEl = document.getElementById(`res-${idx}`);
+    const labels = document.querySelectorAll(`#card-${idx} .option-label`);
+
+    // reset styles
+    labels.forEach(l => { l.classList.remove('correct', 'wrong'); });
+
+    if (!sel) {
+      unanswered++;
+      resEl.className = 'result-msg unanswered';
+      resEl.textContent = '⚠️ Bạn chưa chọn đáp án!';
+    } else {
+      const chosen = parseInt(sel.value);
+      if (chosen === item.ans) {
+        correct++;
+        labels[chosen].classList.add('correct');
+        resEl.className = 'result-msg correct';
+        resEl.textContent = '✓ Chính xác!';
       } else {
-        document.getElementById("result1").innerText = "Câu 1: Sai rồi!";
-      }
-
-      // Câu 2
-      const answers2 = document.getElementsByName("answer2");
-      let selected2 = null;
-      for (let i = 0; i < answers2.length; i++) {
-        if (answers2[i].checked) {
-          selected2 = answers2[i].value;
-          break;
-        }
-      }
-      if (selected2 === null) {
-        document.getElementById("result2").innerText = "Bạn chưa chọn đáp án!";
-      } else if (selected2 === "4") {
-        document.getElementById("result2").innerText = "Câu 2: Chính xác!";
-      } else {
-        document.getElementById("result2").innerText = "Câu 2: Sai rồi!";
+        labels[chosen].classList.add('wrong');
+        labels[item.ans].classList.add('correct');
+        resEl.className = 'result-msg wrong';
+        resEl.textContent = `✗ Sai! Đáp án đúng: ${optionLetters[item.ans]}. ${item.opts[item.ans]}`;
       }
     }
-  </script>
+  });
+
+  const scoreEl = document.getElementById('score-display');
+  scoreEl.style.display = 'block';
+  const pct = Math.round((correct / questions.length) * 100);
+  scoreEl.innerHTML = `Kết quả: <span>${correct} / ${questions.length}</span> câu đúng &nbsp;·&nbsp; <span>${pct}%</span>`;
+
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+}
+
+function resetAll() {
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  questions.forEach((_, idx) => {
+    const resEl = document.getElementById(`res-${idx}`);
+    resEl.className = 'result-msg';
+    resEl.textContent = '';
+    document.querySelectorAll(`#card-${idx} .option-label`).forEach(l => l.classList.remove('correct', 'wrong'));
+  });
+  document.getElementById('score-display').style.display = 'none';
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+updateProgress();
+</script>
 </body>
 </html>
