@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Tiếng Anh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0c0e;
+      --ink: #f0ede6;
+      --muted: #6b6860;
+      --line: #222327;
+      --card-a: #13100a;
+      --card-b: #0a0f13;
+      --gold: #c9a84c;
+      --gold2: #e8c97a;
+      --blue: #4a90d9;
+      --blue2: #82b8f5;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND GRAIN ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3.5rem;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 9vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+    }
+
+    h1 .line1 { color: var(--ink); }
+    h1 .line2 {
+      background: linear-gradient(90deg, var(--gold), var(--gold2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.7;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--line);
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    /* ── CARDS ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      width: 100%;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    @media (max-width: 560px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      position: relative;
+      border-radius: 20px;
+      padding: 2.2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      text-decoration: none;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(.22,.68,0,1.2), box-shadow 0.25s;
+      border: 1px solid transparent;
+    }
+
+    .card:hover {
+      transform: translateY(-6px) scale(1.01);
+    }
+
+    /* Card A – Full */
+    .card-full {
+      background: var(--card-a);
+      border-color: rgba(201,168,76,0.2);
+      box-shadow: 0 0 0 rgba(201,168,76,0);
+    }
+
+    .card-full:hover {
+      box-shadow: 0 20px 50px rgba(201,168,76,0.12);
+      border-color: rgba(201,168,76,0.4);
+    }
+
+    .card-full::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Card B – Random */
+    .card-random {
+      background: var(--card-b);
+      border-color: rgba(74,144,217,0.2);
+      box-shadow: 0 0 0 rgba(74,144,217,0);
+    }
+
+    .card-random:hover {
+      box-shadow: 0 20px 50px rgba(74,144,217,0.12);
+      border-color: rgba(74,144,217,0.4);
+    }
+
+    .card-random::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,144,217,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .card-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+      width: fit-content;
+    }
+
+    .card-full .card-tag {
+      color: var(--gold);
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.25);
+    }
+
+    .card-random .card-tag {
+      color: var(--blue2);
+      background: rgba(74,144,217,0.1);
+      border: 1px solid rgba(74,144,217,0.25);
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      gap: 1.2rem;
+      margin-top: 0.4rem;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .card-full .meta-num { color: var(--gold); }
+    .card-random .meta-num { color: var(--blue2); }
+
+    .meta-lbl {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    .card-arrow {
+      position: absolute;
+      bottom: 1.8rem;
+      right: 1.8rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .card-full .card-arrow {
+      background: rgba(201,168,76,0.12);
+      color: var(--gold);
+    }
+
+    .card-random .card-arrow {
+      background: rgba(74,144,217,0.12);
+      color: var(--blue2);
+    }
+
+    .card:hover .card-arrow { transform: translate(3px, -3px); }
+
+    /* ── FOOTER ── */
+    footer {
+      color: var(--muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+      text-align: center;
+      animation: fadeUp 0.9s 0.3s ease both;
+    }
+
+    /* ── ANIMATION ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <div class="hero">
+    <div class="eyebrow">
+      <span></span>Tiếng Anh Lớp 11<span></span>
+    </div>
+    <h1>
+      <div class="line1">Bộ đề</div>
+      <div class="line2">Trắc Nghiệm</div>
+    </h1>
+    <p class="hero-desc">Luyện tập phát âm, trọng âm, từ vựng và ngữ pháp với 50 câu hỏi được biên soạn kỹ lưỡng.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+
+    <!-- CARD: FULL -->
+    <a class="card card-full" href="full.html">
+      <div class="card-icon">📋</div>
+      <div class="card-tag">Đầy đủ</div>
+      <div class="card-title">Làm toàn bộ<br>50 câu</div>
+      <div class="card-desc">Hoàn thành tất cả 50 câu hỏi trong một lượt. Kiểm tra kết quả một lần duy nhất ở cuối bài.</div>
+      <div class="card-meta">
+        <div class="meta-item">
+          <span class="meta-num">50</span>
+          <span class="meta-lbl">Câu hỏi</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-num">3</span>
+          <span class="meta-lbl">Phần thi</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-num">~15'</span>
+          <span class="meta-lbl">Thời gian</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <!-- CARD: RANDOM -->
+    <a class="card card-random" href="random.html">
+      <div class="card-icon">🎲</div>
+      <div class="card-tag">Ngẫu nhiên</div>
+      <div class="card-title">Xáo ngẫu nhiên<br>10 câu</div>
+      <div class="card-desc">Mỗi lượt chọn ngẫu nhiên 10 câu từ bộ 50. Phản hồi tức thì sau mỗi câu trả lời.</div>
+      <div class="card-meta">
+        <div class="meta-item">
+          <span class="meta-num">10</span>
+          <span class="meta-lbl">Câu / lượt</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-num">∞</span>
+          <span class="meta-lbl">Lượt chơi</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-num">~3'</span>
+          <span class="meta-lbl">Thời gian</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+  </div>
+
+  <footer>© 2025 &nbsp;·&nbsp; Bộ đề Tiếng Anh &nbsp;·&nbsp; 50 câu hỏi</footer>
+
+</div>
+
+</body>
+</html>
