@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trắc Nghiệm Ngẫu Nhiên</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --card: #20243a;
+      --border: #2e3350;
+      --ink: #e8eaf6;
+      --muted: #7b82a8;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --correct: #00e5a0;
+      --wrong: #ff6584;
+      --warn: #ffcc00;
+      --selected: rgba(108,99,255,0.18);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 2rem 1rem 5rem;
+    }
+
+    /* ── SCREEN: START ── */
+    #screen-start {
+      max-width: 520px;
+      margin: 5vh auto 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+    }
+
+    .badge {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+
+    #screen-start h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      line-height: 1.15;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #screen-start p {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #8b5cf6);
+      color: #fff;
+      border: none;
+      padding: 0.9rem 2.8rem;
+      font-size: 1.05rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 24px rgba(108,99,255,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(108,99,255,0.5);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      text-align: center;
+    }
+
+    .stat-box .num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: var(--accent);
+    }
+
+    .stat-box .lbl {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .mode-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-mode {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--ink);
+      padding: 0.75rem 1.6rem;
+      font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-mode:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(108,99,255,0.08);
+    }
+
+    /* ── SCREEN: SELECT ── */
+    #screen-select {
+      display: none;
+      max-width: 760px;
+      margin: 0 auto;
+      flex-direction: column;
+      gap: 1.4rem;
+    }
+
+    .select-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .select-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+    }
+
+    .sel-counter {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      padding: 0.4rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .sel-counter.ready {
+      border-color: var(--correct);
+      color: var(--correct);
+    }
+
+    .sel-counter.over {
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .select-tip {
+      color: var(--muted);
+      font-size: 0.88rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+    }
+
+    .sec-group { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .sec-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      padding: 0.2rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.2rem;
+    }
+
+    .q-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 0.55rem;
+    }
+
+    .q-select-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+      user-select: none;
+    }
+
+    .q-select-item:hover {
+      background: rgba(108,99,255,0.07);
+      border-color: rgba(108,99,255,0.4);
+      transform: translateX(2px);
+    }
+
+    .q-select-item.selected {
+      background: var(--selected);
+      border-color: var(--accent);
+    }
+
+    .q-select-item.disabled-item {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .q-select-item.disabled-item:hover {
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .q-checkbox {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 2px solid var(--border);
+      background: transparent;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .q-select-item.selected .q-checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .q-checkbox::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+      display: none;
+    }
+
+    .q-select-item.selected .q-checkbox::after { display: block; }
+
+    .q-select-label {
+      font-size: 0.85rem;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+
+    .q-num-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-right: 4px;
+    }
+
+    .select-actions {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      bottom: 1rem;
+      background: var(--bg);
+      padding: 0.8rem 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .select-bulk {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      padding: 0.5rem 1rem;
+      font-size: 0.82rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── SCREEN: QUIZ ── */
+    #screen-quiz { display: none; max-width: 700px; margin: 0 auto; }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.8rem;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+
+    .q-counter {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--muted);
+    }
+
+    .q-counter span { color: var(--ink); font-size: 1.4rem; }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      min-width: 100px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    .section-chip {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.3);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    .q-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+      animation: slideIn 0.35s cubic-bezier(.22,.68,0,1.2);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .q-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: var(--ink);
+    }
+
+    .options { display: grid; gap: 0.7rem; }
+
+    .opt-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      text-align: left;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      background: rgba(108,99,255,0.1);
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .opt-btn:disabled { cursor: default; }
+
+    .opt-btn .letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--border);
+      font-weight: 700;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .opt-btn.correct {
+      background: rgba(0,229,160,0.1);
+      border-color: var(--correct);
+      color: var(--correct);
+      font-weight: 600;
+    }
+
+    .opt-btn.correct .letter { background: var(--correct); color: #000; }
+
+    .opt-btn.wrong {
+      background: rgba(255,101,132,0.1);
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .opt-btn.wrong .letter { background: var(--wrong); color: #fff; }
+
+    .feedback {
+      margin-top: 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      min-height: 1.3em;
+      padding: 0.5rem 0.8rem;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .feedback.correct { color: var(--correct); background: rgba(0,229,160,0.08); display: block; }
+    .feedback.wrong   { color: var(--wrong);   background: rgba(255,101,132,0.08); display: block; }
+
+    .nav-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+
+    .btn-next {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 2rem;
+      font-size: 0.95rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-next:hover { opacity: 0.9; transform: translateX(3px); }
+
+    /* ── SCREEN: RESULT ── */
+    #screen-result {
+      display: none;
+      max-width: 600px;
+      margin: 4vh auto 0;
+      text-align: center;
+    }
+
+    .result-ring {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .result-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 10; }
+    .ring-fill {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 408;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .ring-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: #fff;
+    }
+
+    .ring-wrap { position: relative; display: inline-block; }
+
+    #screen-result h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    #screen-result .sub {
+      color: var(--muted);
+      margin-bottom: 2rem;
+      font-size: 0.95rem;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .res-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .res-box .rnum {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+    }
+
+    .res-box .rlbl { font-size: 0.78rem; color: var(--muted); }
+
+    .btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      padding: 0.7rem 1.8rem;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover { background: var(--accent); color: #fff; }
+
+    .review-list {
+      margin-top: 2rem;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .review-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .review-item .ri-q { font-weight: 600; margin-bottom: 0.3rem; }
+    .review-item .ri-ans { color: var(--muted); }
+    .review-item .ri-ans .correct-a { color: var(--correct); font-weight: 600; }
+    .review-item .ri-ans .wrong-a   { color: var(--wrong); text-decoration: line-through; }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot.c { background: var(--correct); }
+    .dot.w { background: var(--wrong); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- ── START SCREEN ── -->
+<div id="screen-start">
+  <div class="badge">Tiếng Anh</div>
+  <h1>Trắc Nghiệm<br>Ngẫu Nhiên</h1>
+  <p>Chọn chế độ chơi phù hợp với bạn.<br>Mỗi lượt tối đa <strong>20 câu</strong> từ bộ 50 câu hỏi.</p>
+
+  <div class="stats-row">
+    <div class="stat-box"><div class="num">50</div><div class="lbl">Tổng câu hỏi</div></div>
+    <div class="stat-box"><div class="num">20</div><div class="lbl">Câu mỗi lượt</div></div>
+    <div class="stat-box"><div class="num">3</div><div class="lbl">Phần thi</div></div>
+  </div>
+
+  <div class="mode-row">
+    <button class="btn-primary" onclick="startQuizRandom()">🎲 Xáo ngẫu nhiên 10 câu</button>
+    <button class="btn-mode" onclick="goSelectScreen()">✏️ Tự chọn câu hỏi</button>
+  </div>
+</div>
+
+<!-- ── SELECT SCREEN ── -->
+<div id="screen-select">
+  <div class="select-header">
+    <h2>✏️ Chọn câu hỏi</h2>
+    <div class="sel-counter" id="sel-counter">Đã chọn: 0 / 20</div>
+  </div>
+
+  <div class="select-tip">💡 Chọn từ <strong>2 đến 20 câu</strong>. Sau khi bấm <strong>OK & Xáo trộn</strong>, thứ tự sẽ được xáo ngẫu nhiên rồi bắt đầu.</div>
+
+  <div id="select-question-list"></div>
+
+  <div class="select-actions">
+    <div class="select-bulk">
+      <button class="btn-ghost" onclick="selectAll()">☑ Chọn tất cả</button>
+      <button class="btn-ghost" onclick="clearAll()">✕ Bỏ chọn hết</button>
+      <button class="btn-ghost" onclick="goStart()">← Quay lại</button>
+    </div>
+    <button class="btn-primary" id="btn-ok-select" onclick="startFromSelection()" disabled>✅ OK &amp; Xáo trộn</button>
+  </div>
+</div>
+
+<!-- ── QUIZ SCREEN ── -->
+<div id="screen-quiz">
+  <div class="quiz-header">
+    <div class="q-counter">Câu <span id="q-num">1</span> / <span id="q-total">10</span></div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+    <div class="section-chip" id="sec-chip">Phần I</div>
+  </div>
+
+  <div class="q-card" id="q-card">
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Câu tiếp theo →</button>
+  </div>
+</div>
+
+<!-- ── RESULT SCREEN ── -->
+<div id="screen-result">
+  <div class="ring-wrap">
+    <div class="result-ring">
+      <svg viewBox="0 0 140 140">
+        <circle class="ring-bg" cx="70" cy="70" r="65"/>
+        <circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="65"/>
+      </svg>
+    </div>
+    <div class="ring-text" id="ring-pct">0%</div>
+  </div>
+
+  <h2 id="result-title">Kết quả</h2>
+  <p class="sub" id="result-sub"></p>
+
+  <div class="result-grid">
+    <div class="res-box"><div class="rnum" id="r-correct" style="color:var(--correct)">0</div><div class="rlbl">Đúng</div></div>
+    <div class="res-box"><div class="rnum" id="r-wrong" style="color:var(--wrong)">0</div><div class="rlbl">Sai</div></div>
+    <div class="res-box"><div class="rnum" id="r-pct">0%</div><div class="rlbl">Tỉ lệ</div></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-primary" id="btn-replay" onclick="replayLast()">🔄 Chơi lại bộ này</button>
+    <button class="btn-outline" onclick="toggleReview()">📋 Xem lại đáp án</button>
+    <button class="btn-outline" onclick="goStart()">🏠 Trang chủ</button>
+  </div>
+
+  <div class="review-list" id="review-list" style="display:none"></div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  { sec:"I", q:"Question 1. Phần gạch chân: ch — Chọn từ phát âm KHÁC.", opts:["chest","teacher","chef","watch"], ans:2 },
+  { sec:"I", q:"Question 2. Phần gạch chân: oo — Chọn từ phát âm KHÁC.", opts:["boost","book","cook","look"], ans:0 },
+  { sec:"I", q:"Question 3. Phần gạch chân: ou — Chọn từ phát âm KHÁC.", opts:["sound","ground","wound","pound"], ans:2 },
+  { sec:"I", q:"Question 4. Phần gạch chân: i — Chọn từ phát âm KHÁC.", opts:["mineral","meditate","arthritis","limit"], ans:2 },
+  { sec:"I", q:"Question 5. Phần gạch chân: o — Chọn từ phát âm KHÁC.", opts:["cyborg","portion","organise","hologram"], ans:2 },
+  { sec:"II", q:"Question 6. Chọn từ có trọng âm chính KHÁC.", opts:["diabetes","expectancy","memorial","bacteria"], ans:0 },
+  { sec:"II", q:"Question 7. Chọn từ có trọng âm chính KHÁC.", opts:["remedy","mineral","nutrient","infection"], ans:3 },
+  { sec:"II", q:"Question 8. Chọn từ có trọng âm chính KHÁC.", opts:["travel","reduce","provide","allow"], ans:0 },
+  { sec:"II", q:"Question 9. Chọn từ có trọng âm chính KHÁC.", opts:["balance","lifestyle","hunger","obese"], ans:3 },
+  { sec:"II", q:"Question 10. Chọn từ có trọng âm chính KHÁC.", opts:["lifestyle","wellness","treadmill","replace"], ans:3 },
+  { sec:"III", q:"Question 11. I don't know why he hangs __________ with James, they've got nothing in common.", opts:["off","in","out","on"], ans:2 },
+  { sec:"III", q:"Question 12. Sleep and the immune __________ are obviously connected.", opts:["system","construction","instruction","net"], ans:0 },
+  { sec:"III", q:"Question 13. This win could prove to be a historic turning __________ in the fortunes of the team.", opts:["event","score","mark","point"], ans:3 },
+  { sec:"III", q:"Question 14. __________ often clears up with a change in diet.", opts:["Scars","Acne","Burns","Toothache"], ans:1 },
+  { sec:"III", q:"Question 15. In my view, he __________ peel the potatoes before mashing them.", opts:["have to","should","need","mustn't"], ans:1 },
+  { sec:"III", q:"Question 16. You __________ take the bus - it's the easiest way to get there.", opts:["don't need to","will","can't","should"], ans:3 },
+  { sec:"III", q:"Question 17. You __________ to pay for the tickets in advance.", opts:["needn't","had better not","mustn't","don't have"], ans:3 },
+  { sec:"III", q:"Question 18. Passengers __________ undo their seat belts until the signs have been switched off.", opts:["mustn't","don't have to","shouldn't","had better not"], ans:0 },
+  { sec:"III", q:"Question 19. They had to survive on a __________ of insects and berries when lost in a jungle.", opts:["drink","food","diet","meal"], ans:2 },
+  { sec:"III", q:"Question 20. He's __________ good shape for someone who had surgery six months ago.", opts:["in","on","off","about"], ans:0 },
+  { sec:"III", q:"Question 21. Yoga is said to __________ the wellness of the mind and body.", opts:["promote","manage","take up","track"], ans:0 },
+  { sec:"III", q:"Question 22. This recipe for chicken porridge will be enough for four __________.", opts:["parts","servings","pieces","sections"], ans:1 },
+  { sec:"III", q:"Question 23. Please join me in __________ Luke on an outstanding season.", opts:["congratulating","praising","blaming","thanking"], ans:0 },
+  { sec:"III", q:"Question 24. No one could ever accuse this government __________ not caring about the poor.", opts:["for","in","of","on"], ans:2 },
+  { sec:"III", q:"Question 25. He categorically denied __________ in an armed robbery.", opts:["having involved","to being involved","involving","having been involved"], ans:3 },
+  { sec:"III", q:"Question 26. We stood on the bridge __________ the two halves of the city.", opts:["connected","to be connected","to connect","connecting"], ans:3 },
+  { sec:"III", q:"Question 27. Pink Star was the only pink diamond __________ by De Beers in 1999 in South Africa.", opts:["to be mined","mined","being mined","mining"], ans:0 },
+  { sec:"III", q:"Question 28. The car had carried him 500 miles before it broke __________.", opts:["in","up","down","off"], ans:2 },
+  { sec:"III", q:"Question 29. While cleaning staff are busy __________ on one floor, they may suddenly need to move.", opts:["work","to work","working","worked"], ans:2 },
+  { sec:"III", q:"Question 30. I'm __________ some art classes at the moment.", opts:["conducting","taking","carrying","putting"], ans:1 },
+  { sec:"III", q:"Question 31. The writer suffered __________ ill health for most of his life.", opts:["about","in","from","of"], ans:2 },
+  { sec:"III", q:"Question 32. Try drinking ginger tea before travelling if you suffer __________ motion sickness.", opts:["of","from","with","on"], ans:1 },
+  { sec:"III", q:"Question 33. You need to cut __________ salt, sugar and fatty foods to lose weight.", opts:["out of","down with","up with","down on"], ans:3 },
+  { sec:"III", q:"Question 34. __________ is using digital technology to hurt someone else, e.g. spreading rumours online.", opts:["Cyberbullying","Depression","Racism","Crime"], ans:0 },
+  { sec:"III", q:"Question 35. The piano __________ at the moment belongs to my grandfather.", opts:["mended","being mended","to be mended","mending"], ans:1 },
+  { sec:"III", q:"Question 36. Turn off the light after leaving the room, __________?", opts:["shall we","will you","may I","won't you"], ans:3 },
+  { sec:"III", q:"Question 37. __________ we use more solar energy, the air will become cleaner.", opts:["Unless","As","If","Though"], ans:2 },
+  { sec:"III", q:"Question 38. Visitors __________ enter the operating room.", opts:["must","have to","mustn't","don't have to"], ans:2 },
+  { sec:"III", q:"Question 39. I think flying cars __________ a common mode of transportation in cities in the future.", opts:["will become","becomes","becoming","is going to become"], ans:0 },
+  { sec:"III", q:"Question 40. He has some difficulty __________ people when they speak softly.", opts:["heard","hearing","to hear","hears"], ans:1 },
+  { sec:"III", q:"Question 41. __________ the bottles, Mike poured the drinks for everyone.", opts:["To open","to have opened","being opened","having opened"], ans:3 },
+  { sec:"III", q:"Question 42. Look at those loose solar panels! They __________ off the roof.", opts:["will fall","fall","are going to fall","will be fall"], ans:2 },
+  { sec:"III", q:"Question 43. In the future, __________ roads will inform drivers about traffic conditions.", opts:["3D printed","digital","moving","floating"], ans:1 },
+  { sec:"III", q:"Question 44. Some people experience __________ from the locals when they move to a new country.", opts:["unemployment","disease","racism","war"], ans:2 },
+  { sec:"III", q:"Question 45. John has bad hay fever; he also often gets a __________ nose in the winter.", opts:["runny","swollen","sneezing","bruised"], ans:0 },
+  { sec:"III", q:"Question 46. Solar windows __________ energy from the sun.", opts:["bring","provide","produce","need"], ans:2 },
+  { sec:"III", q:"Question 47. It's important to __________ laws to ensure equal opportunities for all people despite their gender.", opts:["pass","offer","provide","give"], ans:0 },
+  { sec:"III", q:"Question 48. Andy wants to be a __________ trainer when he leaves school.", opts:["wellness","lifestyle","personal","healthy"], ans:2 },
+  { sec:"III", q:"Question 49. Ann is coughing a lot because she has a __________.", opts:["sore throat","chest infection","hay fever","rash"], ans:1 },
+  { sec:"III", q:"Question 50. Ben has decided to __________ sugar in order to lose some weight.", opts:["cut down on","eat","give up","drink"], ans:0 },
+];
+
+const LETTERS = ['A','B','C','D'];
+const SEC_LABELS = { "I": "Phần I – Phát âm", "II": "Phần II – Trọng âm", "III": "Phần III – Ngữ pháp" };
+const MAX_SELECT = 20;
+
+let batch = [];
+let current = 0;
+let answered = false;
+let userAnswers = [];
+let reviewVisible = false;
+let selectedIndices = new Set();
+let lastMode = 'random'; // 'random' | 'select'
+let lastSelectedIndices = null;
+
+/* ── SHUFFLE ── */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ── START SCREEN ── */
+function goStart() {
+  show('screen-start');
+}
+
+/* ── RANDOM MODE ── */
+function startQuizRandom() {
+  lastMode = 'random';
+  batch = shuffle(ALL_QUESTIONS).slice(0, 10);
+  current = 0;
+  userAnswers = [];
+  reviewVisible = false;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+/* ── SELECT SCREEN ── */
+function goSelectScreen() {
+  selectedIndices = new Set();
+  renderSelectList();
+  updateSelCounter();
+  show('screen-select');
+}
+
+function renderSelectList() {
+  const container = document.getElementById('select-question-list');
+  container.innerHTML = '';
+
+  const sections = ['I','II','III'];
+  sections.forEach(sec => {
+    const secQs = ALL_QUESTIONS.map((q, i) => ({ ...q, origIdx: i })).filter(q => q.sec === sec);
+    if (!secQs.length) return;
+
+    const group = document.createElement('div');
+    group.className = 'sec-group';
+
+    const title = document.createElement('div');
+    title.className = 'sec-title';
+    title.textContent = SEC_LABELS[sec] || sec;
+    group.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'q-select-grid';
+
+    secQs.forEach(({ q, origIdx }) => {
+      const item = document.createElement('div');
+      item.className = 'q-select-item';
+      item.dataset.idx = origIdx;
+      item.innerHTML = `
+        <div class="q-checkbox"></div>
+        <div class="q-select-label"><span class="q-num-badge">Q${origIdx + 1}</span>${q}</div>
+      `;
+      item.addEventListener('click', () => toggleSelect(origIdx));
+      grid.appendChild(item);
+    });
+
+    group.appendChild(grid);
+    container.appendChild(group);
+  });
+}
+
+function toggleSelect(idx) {
+  if (selectedIndices.has(idx)) {
+    selectedIndices.delete(idx);
+  } else {
+    if (selectedIndices.size >= MAX_SELECT) return;
+    selectedIndices.add(idx);
+  }
+  updateSelectUI();
+}
+
+function updateSelectUI() {
+  const count = selectedIndices.size;
+  document.querySelectorAll('.q-select-item').forEach(item => {
+    const idx = parseInt(item.dataset.idx);
+    const isSel = selectedIndices.has(idx);
+    item.classList.toggle('selected', isSel);
+    // Disable unselected items if at MAX
+    const atMax = count >= MAX_SELECT;
+    item.classList.toggle('disabled-item', atMax && !isSel);
+  });
+  updateSelCounter();
+}
+
+function updateSelCounter() {
+  const count = selectedIndices.size;
+  const el = document.getElementById('sel-counter');
+  el.textContent = `Đã chọn: ${count} / ${MAX_SELECT}`;
+  el.className = 'sel-counter' + (count >= 2 && count <= MAX_SELECT ? ' ready' : count > MAX_SELECT ? ' over' : '');
+  document.getElementById('btn-ok-select').disabled = count < 2;
+}
+
+function selectAll() {
+  const canAdd = MAX_SELECT - selectedIndices.size;
+  ALL_QUESTIONS.forEach((_, i) => {
+    if (selectedIndices.size < MAX_SELECT) selectedIndices.add(i);
+  });
+  updateSelectUI();
+}
+
+function clearAll() {
+  selectedIndices.clear();
+  updateSelectUI();
+}
+
+/* ── START FROM SELECTION ── */
+function startFromSelection() {
+  if (selectedIndices.size < 2) return;
+  lastMode = 'select';
+  lastSelectedIndices = new Set(selectedIndices);
+
+  const picked = [...selectedIndices].map(i => ALL_QUESTIONS[i]);
+  batch = shuffle(picked);
+  current = 0;
+  userAnswers = [];
+  reviewVisible = false;
+  show('screen-quiz');
+  renderQuestion();
+}
+
+/* ── REPLAY ── */
+function replayLast() {
+  if (lastMode === 'random') {
+    startQuizRandom();
+  } else if (lastMode === 'select' && lastSelectedIndices) {
+    const picked = [...lastSelectedIndices].map(i => ALL_QUESTIONS[i]);
+    batch = shuffle(picked);
+    current = 0;
+    userAnswers = [];
+    reviewVisible = false;
+    show('screen-quiz');
+    renderQuestion();
+  }
+}
+
+/* ── RENDER QUESTION ── */
+function renderQuestion() {
+  answered = false;
+  const total = batch.length;
+  const item = batch[current];
+
+  document.getElementById('q-num').textContent = current + 1;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('prog-fill').style.width = `${((current + 1) / total) * 100}%`;
+  document.getElementById('sec-chip').textContent = SEC_LABELS[item.sec] || item.sec;
+  document.getElementById('q-text').textContent = item.q;
+
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+  feedback.textContent = '';
+
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'none';
+  btnNext.textContent = current < total - 1 ? 'Câu tiếp theo →' : 'Xem kết quả 🏆';
+
+  const opts = document.getElementById('options');
+  opts.innerHTML = '';
+
+  item.opts.forEach((opt, oi) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="letter">${LETTERS[oi]}</span> ${opt}`;
+    btn.onclick = () => selectAnswer(oi);
+    opts.appendChild(btn);
+  });
+
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none';
+  requestAnimationFrame(() => { card.style.animation = ''; });
+}
+
+function selectAnswer(chosen) {
+  if (answered) return;
+  answered = true;
+
+  const item = batch[current];
+  const btns = document.querySelectorAll('.opt-btn');
+  const feedback = document.getElementById('feedback');
+  const btnNext = document.getElementById('btn-next');
+
+  btns.forEach(b => b.disabled = true);
+
+  if (chosen === item.ans) {
+    btns[chosen].classList.add('correct');
+    feedback.className = 'feedback correct';
+    feedback.textContent = '✓ Chính xác!';
+  } else {
+    btns[chosen].classList.add('wrong');
+    btns[item.ans].classList.add('correct');
+    feedback.className = 'feedback wrong';
+    feedback.textContent = `✗ Sai! Đáp án đúng: ${LETTERS[item.ans]}. ${item.opts[item.ans]}`;
+  }
+
+  userAnswers.push({ q: item.q, opts: item.opts, ans: item.ans, chosen });
+  btnNext.style.display = 'inline-block';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < batch.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+/* ── RESULT ── */
+function showResult() {
+  show('screen-result');
+
+  const total = userAnswers.length;
+  const correct = userAnswers.filter(a => a.chosen === a.ans).length;
+  const pct = Math.round((correct / total) * 100);
+
+  const ring = document.getElementById('ring-fill');
+  const circumference = 408;
+  const offset = circumference - (pct / 100) * circumference;
+  ring.style.stroke = pct >= 80 ? 'var(--correct)' : pct >= 50 ? 'var(--accent)' : 'var(--wrong)';
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+
+  document.getElementById('ring-pct').textContent = pct + '%';
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = total - correct;
+  document.getElementById('r-pct').textContent = pct + '%';
+
+  const titles = ['Cần cố gắng thêm! 💪', 'Khá ổn! Tiếp tục nhé 👍', 'Tốt lắm! 🎉', 'Xuất sắc! 🏆'];
+  const ti = pct < 40 ? 0 : pct < 60 ? 1 : pct < 90 ? 2 : 3;
+  document.getElementById('result-title').textContent = titles[ti];
+  document.getElementById('result-sub').textContent = `Bạn trả lời đúng ${correct}/${total} câu trong lượt này.`;
+
+  const replayBtn = document.getElementById('btn-replay');
+  replayBtn.textContent = lastMode === 'select' ? '🔄 Xáo lại bộ đã chọn' : '🎲 Xáo lại ngẫu nhiên';
+
+  reviewVisible = false;
+  document.getElementById('review-list').style.display = 'none';
+}
+
+function toggleReview() {
+  reviewVisible = !reviewVisible;
+  const box = document.getElementById('review-list');
+  if (!reviewVisible) { box.style.display = 'none'; return; }
+  box.style.display = 'flex';
+  box.innerHTML = '';
+
+  userAnswers.forEach((a, i) => {
+    const isCorrect = a.chosen === a.ans;
+    const item = document.createElement('div');
+    item.className = 'review-item';
+    item.innerHTML = `
+      <div class="ri-q"><span class="dot ${isCorrect ? 'c' : 'w'}"></span>${i + 1}. ${a.q}</div>
+      <div class="ri-ans">
+        ${!isCorrect ? `<span class="wrong-a">Bạn chọn: ${LETTERS[a.chosen]}. ${a.opts[a.chosen]}</span><br>` : ''}
+        <span class="correct-a">✓ Đáp án: ${LETTERS[a.ans]}. ${a.opts[a.ans]}</span>
+      </div>`;
+    box.appendChild(item);
+  });
+}
+
+/* ── SHOW SCREEN ── */
+function show(id) {
+  const screens = ['screen-start','screen-select','screen-quiz','screen-result'];
+  screens.forEach(s => {
+    const el = document.getElementById(s);
+    if (s === id) {
+      el.style.display = 'flex';
+      el.style.flexDirection = 'column';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
