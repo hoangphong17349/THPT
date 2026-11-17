@@ -27,8 +27,6 @@
       --purple2: #c4b0f5;
     }
 
-    html, body { height: 100%; }
-
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
@@ -37,7 +35,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 2rem 1.5rem;
       overflow-x: hidden;
     }
@@ -52,6 +49,7 @@
     }
 
     .wrapper {
+      margin: auto 0;   /* căn giữa theo chiều dọc khi còn chỗ, và không cắt mất phần đầu khi nội dung dài hơn màn hình */
       position: relative;
       z-index: 1;
       width: 100%;
