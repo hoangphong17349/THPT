@@ -291,6 +291,7 @@
 <script>
 let questions = [];      // được nạp từ de-kiem-tra.html (xem phần khởi động ở cuối file)
 let answers = [];        // answers[i] = vị trí đáp án đã chọn ở câu i, hoặc null
+let checked = [];        // checked[i] = true khi câu i đã được kiểm tra (đã khoá + hiện đáp án)
 let current = 0;
 
 const optionLetters = ['A', 'B', 'C', 'D'];
@@ -353,7 +354,7 @@ function render() {
   $('secTitle').textContent = item.sectionText;
   const host = $('cardHost');
   host.innerHTML = '';
-  host.appendChild(buildCard(current, false));
+  host.appendChild(buildCard(current, checked[current]));
 
   $('btnPrev').disabled = current === 0;
   $('btnNext').textContent = current === questions.length - 1 ? '✅ Nộp bài' : 'Câu tiếp →';
@@ -370,7 +371,13 @@ function goPrev() {
   if (current > 0) { current--; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
+/* Bấm lần 1: kiểm tra đáp án câu hiện tại. Bấm lần 2: qua câu tiếp (hoặc nộp bài ở câu cuối). */
 function goNext() {
+  if (!checked[current]) {
+    checked[current] = true;
+    render();
+    return;
+  }
   if (current < questions.length - 1) {
     current++;
     render();
@@ -381,9 +388,6 @@ function goNext() {
 }
 
 function finish() {
-  const left = answers.filter(a => a === null).length;
-  if (left > 0 && !confirm(`Bạn còn ${left} câu chưa trả lời. Vẫn nộp bài?`)) return;
-
   const correct = questions.filter((q, i) => answers[i] === q.ans).length;
   const pct = Math.round((correct / questions.length) * 100);
   $('scoreLine').innerHTML = `Kết quả: <span>${correct} / ${questions.length}</span> câu đúng &nbsp;·&nbsp; <span>${pct}%</span>`;
@@ -409,6 +413,7 @@ function finish() {
 
 function restart() {
   answers = questions.map(() => null);
+  checked = questions.map(() => false);
   current = 0;
   $('resultPanel').style.display = 'none';
   $('quizPanel').style.display = 'block';
@@ -422,6 +427,7 @@ document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (e.key === 'ArrowRight') { goNext(); return; }
   if (e.key === 'ArrowLeft') { goPrev(); return; }
+  if (checked[current]) return;   // câu đã kiểm tra thì không đổi đáp án nữa
   const oi = 'abcd'.indexOf(e.key.toLowerCase());
   if (e.key.length === 1 && oi >= 0 && oi < questions[current].opts.length) {
     answers[current] = oi;
@@ -442,6 +448,7 @@ ExamLoader.load().then(exam => {
     };
   });
   answers = questions.map(() => null);
+  checked = questions.map(() => false);
   render();
 }).catch(ExamLoader.fail);
 </script>
