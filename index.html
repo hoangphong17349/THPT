@@ -17,6 +17,7 @@
       --card-b: #0a0f13;
       --card-c: #0a130f;
       --card-d: #100c16;
+      --card-e: #160c0f;
       --gold: #c9a84c;
       --gold2: #e8c97a;
       --blue: #4a90d9;
@@ -25,6 +26,8 @@
       --green2: #72dca8;
       --purple: #9b7ae0;
       --purple2: #c4b0f5;
+      --rose: #e0788a;
+      --rose2: #f2a6b3;
     }
 
     body {
@@ -122,10 +125,25 @@
     /* ── CARDS ── */
     .cards {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(6, 1fr);   /* 6 cột: 3 thẻ x 2 cột ở hàng trên, 2 thẻ x 3 cột ở hàng dưới */
       gap: 1.5rem;
       width: 100%;
       animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .cards > .card { grid-column: span 2; }
+    .cards > .card:nth-child(n+4) { grid-column: span 3; }
+
+    /* Hàng trên có 3 thẻ hẹp: đưa nút mũi tên lên góc phải trên để không chạm vào số liệu */
+    @media (min-width: 901px) {
+      .cards > .card:nth-child(-n+3) .card-arrow { bottom: auto; top: 1.8rem; }
+    }
+
+    /* Màn hình vừa: 2 cột, thẻ cuối trải kín hàng cho khỏi bị lẻ */
+    @media (max-width: 900px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .cards > .card,
+      .cards > .card:nth-child(n+4) { grid-column: span 1; }
+      .cards > .card:last-child { grid-column: 1 / -1; }
     }
 
     @media (max-width: 700px) {
@@ -225,6 +243,28 @@
     .card-step .card-tag   { color: var(--purple2); background: rgba(155,122,224,0.1); border: 1px solid rgba(155,122,224,0.25); }
     .card-step .meta-num   { color: var(--purple2); }
     .card-step .card-arrow { background: rgba(155,122,224,0.12); color: var(--purple2); }
+
+    /* Card E */
+    .card-steprand {
+      background: var(--card-e);
+      border-color: rgba(224,120,138,0.2);
+    }
+    .card-steprand:hover {
+      box-shadow: 0 20px 50px rgba(224,120,138,0.12);
+      border-color: rgba(224,120,138,0.4);
+    }
+    .card-steprand::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(224,120,138,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .card-steprand .card-tag   { color: var(--rose2); background: rgba(224,120,138,0.1); border: 1px solid rgba(224,120,138,0.25); }
+    .card-steprand .meta-num   { color: var(--rose2); }
+    .card-steprand .card-arrow { background: rgba(224,120,138,0.12); color: var(--rose2); }
 
     .card-icon { font-size: 2.2rem; line-height: 1; }
 
@@ -344,7 +384,21 @@
       <div class="card-icon">👉</div>
       <div class="card-tag">Từng câu</div>
       <div class="card-title">Làm toàn bộ<br>từng câu một</div>
-      <div class="card-desc">Làm hết <span data-fill="total">…</span> câu nhưng mỗi lần chỉ hiện một câu, bấm Câu tiếp để qua câu sau. Chấm điểm một lần ở cuối bài.</div>
+      <div class="card-desc">Làm hết <span data-fill="total">…</span> câu, mỗi lần chỉ hiện một câu. Bấm Câu tiếp để xem đáp án rồi mới qua câu sau.</div>
+      <div class="card-meta">
+        <div class="meta-item"><span class="meta-num" data-fill="total">…</span><span class="meta-lbl">Câu hỏi</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="sections">…</span><span class="meta-lbl">Phần thi</span></div>
+        <div class="meta-item"><span class="meta-num">~<span data-fill="minutes">…</span>'</span><span class="meta-lbl">Thời gian</span></div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <!-- CARD: STEP RANDOM (từng câu, thứ tự ngẫu nhiên) -->
+    <a class="card card-steprand" href="full_next_random.html">
+      <div class="card-icon">🔀</div>
+      <div class="card-tag">Từng câu · Ngẫu nhiên</div>
+      <div class="card-title">Làm toàn bộ<br>thứ tự ngẫu nhiên</div>
+      <div class="card-desc">Làm hết <span data-fill="total">…</span> câu, mỗi lần một câu, nhưng thứ tự được xáo mới ở mỗi lượt làm.</div>
       <div class="card-meta">
         <div class="meta-item"><span class="meta-num" data-fill="total">…</span><span class="meta-lbl">Câu hỏi</span></div>
         <div class="meta-item"><span class="meta-num" data-fill="sections">…</span><span class="meta-lbl">Phần thi</span></div>
