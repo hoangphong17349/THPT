@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài Trắc Nghiệm – Từng Câu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --card: #fffdf8;
+      --ink: #1a1209;
+      --accent: #c0392b;
+      --accent2: #e67e22;
+      --muted: #7a6f5e;
+      --border: #d9cfc0;
+      --correct: #27ae60;
+      --wrong: #c0392b;
+      --unanswered: #e67e22;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      max-width: 780px;
+      margin: 0 auto 2.5rem;
+      text-align: center;
+      border-bottom: 3px double var(--accent);
+      padding-bottom: 1.5rem;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      color: var(--accent);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    header p {
+      color: var(--muted);
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .quiz-container {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      border-left: 4px solid var(--accent);
+      padding: 0.3rem 0.8rem;
+      background: #fdf0ed;
+      border-radius: 0 4px 4px 0;
+      margin-top: 1rem;
+    }
+
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 2px 3px 0 var(--border);
+      transition: box-shadow 0.2s;
+    }
+
+    .question-card:hover {
+      box-shadow: 3px 5px 0 #c9bfb0;
+    }
+
+    .question-text {
+      font-weight: 600;
+      font-size: 0.97rem;
+      margin-bottom: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .question-num {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 3px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+    }
+
+    .option-label:hover {
+      background: #f0e8d8;
+      border-color: var(--accent2);
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .option-label.correct {
+      background: #eafaf1;
+      border-color: var(--correct);
+      color: #1e6b42;
+      font-weight: 600;
+    }
+
+    .option-label.wrong {
+      background: #fdecec;
+      border-color: var(--wrong);
+      color: var(--wrong);
+      font-weight: 600;
+    }
+
+    .result-msg {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-height: 1.2em;
+    }
+
+    .result-msg.correct { color: var(--correct); }
+    .result-msg.wrong { color: var(--wrong); }
+    .result-msg.unanswered { color: var(--unanswered); }
+
+    .footer-bar {
+      max-width: 780px;
+      margin: 2.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    #score-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--ink);
+      display: none;
+    }
+
+    #score-display span { color: var(--accent); }
+
+    .btn-check {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.85rem 2.8rem;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      box-shadow: 3px 4px 0 #8e1a10;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn-check:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 2px 0 #8e1a10;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 2px solid var(--muted);
+      color: var(--muted);
+      padding: 0.6rem 1.8rem;
+      font-size: 0.9rem;
+      font-family: 'DM Sans', sans-serif;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover { border-color: var(--ink); color: var(--ink); }
+
+    .progress-bar-wrap {
+      width: 100%;
+      background: var(--border);
+      border-radius: 20px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 20px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .progress-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: right;
+    }
+  
+    /* ── Chế độ từng câu ── */
+    .step-progress { max-width: 780px; margin: 0 auto 1.2rem; }
+    .step-progress .progress-label { margin-top: 0.4rem; text-align: center; }
+    .nav-bar {
+      max-width: 780px;
+      margin: 1.8rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .btn-check[disabled], .btn-reset[disabled] { opacity: 0.4; cursor: not-allowed; }
+    #scoreLine {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--ink);
+      text-align: center;
+    }
+    #scoreLine span { color: var(--accent); }
+    .result-top { max-width: 780px; margin: 0 auto 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📝 Bài Trắc Nghiệm <span data-fill="subject">…</span></h1>
+  <p data-fill="subtitle">…</p>
+</header>
+
+<!-- ── ĐANG LÀM BÀI: mỗi lần một câu ── -->
+<div id="quizPanel">
+  <div class="step-progress">
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <div class="quiz-container">
+    <div class="section-title" id="secTitle"></div>
+    <div id="cardHost"></div>
+  </div>
+
+  <div class="nav-bar">
+    <button class="btn-reset" id="btnPrev" onclick="goPrev()">← Câu trước</button>
+    <button class="btn-check" id="btnNext" onclick="goNext()">Câu tiếp →</button>
+  </div>
+</div>
+
+<!-- ── KẾT QUẢ ── -->
+<div id="resultPanel" style="display:none">
+  <div class="result-top">
+    <div id="scoreLine"></div>
+    <button class="btn-reset" onclick="restart()">🔄 Làm lại</button>
+  </div>
+  <div class="quiz-container" id="reviewList"></div>
+</div>
+
+<script src="exam-loader.js"></script>
+<script>
+let questions = [];      // được nạp từ de-kiem-tra.html (xem phần khởi động ở cuối file)
+let answers = [];        // answers[i] = vị trí đáp án đã chọn ở câu i, hoặc null
+let current = 0;
+
+const optionLetters = ['A', 'B', 'C', 'D'];
+const $ = id => document.getElementById(id);
+
+/* Dựng thẻ câu hỏi. review = true: khoá lại và tô màu đúng/sai */
+function buildCard(idx, review) {
+  const item = questions[idx];
+  const card = document.createElement('div');
+  card.className = 'question-card';
+
+  const qText = document.createElement('div');
+  qText.className = 'question-text';
+  qText.innerHTML = `<span class="question-num">${idx + 1}</span> ${item.q}`;
+  card.appendChild(qText);
+
+  const opts = document.createElement('div');
+  opts.className = 'options';
+  item.opts.forEach((opt, oi) => {
+    const lbl = document.createElement('label');
+    lbl.className = 'option-label';
+    lbl.innerHTML = `<input type="radio" name="q${idx}" value="${oi}"> <strong>${optionLetters[oi]}.</strong> ${opt}`;
+    const input = lbl.querySelector('input');
+    input.checked = answers[idx] === oi;
+    if (review) {
+      input.disabled = true;
+      lbl.style.cursor = 'default';
+    } else {
+      input.addEventListener('change', () => { answers[idx] = oi; updateProgress(); });
+    }
+    opts.appendChild(lbl);
+  });
+  card.appendChild(opts);
+
+  if (review) {
+    const labels = opts.querySelectorAll('.option-label');
+    const res = document.createElement('div');
+    const chosen = answers[idx];
+    if (chosen === null) {
+      res.className = 'result-msg unanswered';
+      res.textContent = '⚠️ Bạn chưa chọn đáp án!';
+      labels[item.ans].classList.add('correct');
+    } else if (chosen === item.ans) {
+      res.className = 'result-msg correct';
+      res.textContent = '✓ Chính xác!';
+      labels[chosen].classList.add('correct');
+    } else {
+      res.className = 'result-msg wrong';
+      res.textContent = `✗ Sai! Đáp án đúng: ${optionLetters[item.ans]}. ${item.opts[item.ans]}`;
+      labels[chosen].classList.add('wrong');
+      labels[item.ans].classList.add('correct');
+    }
+    card.appendChild(res);
+  }
+  return card;
+}
+
+function render() {
+  const item = questions[current];
+  $('secTitle').textContent = item.sectionText;
+  const host = $('cardHost');
+  host.innerHTML = '';
+  host.appendChild(buildCard(current, false));
+
+  $('btnPrev').disabled = current === 0;
+  $('btnNext').textContent = current === questions.length - 1 ? '✅ Nộp bài' : 'Câu tiếp →';
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  $('progressFill').style.width = `${((current + 1) / questions.length) * 100}%`;
+  $('progressLabel').textContent = `Câu ${current + 1} / ${questions.length}  ·  Đã trả lời ${answered}`;
+}
+
+function goPrev() {
+  if (current > 0) { current--; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+function goNext() {
+  if (current < questions.length - 1) {
+    current++;
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    finish();
+  }
+}
+
+function finish() {
+  const left = answers.filter(a => a === null).length;
+  if (left > 0 && !confirm(`Bạn còn ${left} câu chưa trả lời. Vẫn nộp bài?`)) return;
+
+  const correct = questions.filter((q, i) => answers[i] === q.ans).length;
+  const pct = Math.round((correct / questions.length) * 100);
+  $('scoreLine').innerHTML = `Kết quả: <span>${correct} / ${questions.length}</span> câu đúng &nbsp;·&nbsp; <span>${pct}%</span>`;
+
+  const list = $('reviewList');
+  list.innerHTML = '';
+  let lastSec = null;
+  questions.forEach((q, i) => {
+    if (q.sectionText !== lastSec) {
+      const sec = document.createElement('div');
+      sec.className = 'section-title';
+      sec.textContent = q.sectionText;
+      list.appendChild(sec);
+      lastSec = q.sectionText;
+    }
+    list.appendChild(buildCard(i, true));
+  });
+
+  $('quizPanel').style.display = 'none';
+  $('resultPanel').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  answers = questions.map(() => null);
+  current = 0;
+  $('resultPanel').style.display = 'none';
+  $('quizPanel').style.display = 'block';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* Phím tắt: ← → để chuyển câu, A–D để chọn đáp án */
+document.addEventListener('keydown', e => {
+  if (!questions.length || $('quizPanel').style.display === 'none') return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'ArrowRight') { goNext(); return; }
+  if (e.key === 'ArrowLeft') { goPrev(); return; }
+  const oi = 'abcd'.indexOf(e.key.toLowerCase());
+  if (e.key.length === 1 && oi >= 0 && oi < questions[current].opts.length) {
+    answers[current] = oi;
+    render();
+  }
+});
+
+/* ── KHỞI ĐỘNG: nạp đề rồi dựng giao diện ── */
+ExamLoader.load().then(exam => {
+  ExamLoader.fill(exam);
+  questions = exam.questions.map(x => {
+    const sec = exam.sectionById[x.sec];
+    return {
+      sectionText: sec.instruction || sec.label,
+      q: 'Question ' + x.n + '.' + (x.q ? ' ' + x.q : ''),
+      opts: x.opts,
+      ans: x.ans
+    };
+  });
+  answers = questions.map(() => null);
+  render();
+}).catch(ExamLoader.fail);
+</script>
+</body>
+</html>
