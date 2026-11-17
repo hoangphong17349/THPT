@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File đề kiểm tra</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b0c0e; --ink: #f0ede6; --muted: #8a8780; --line: #222327; --card: #13141a;
+      --gold: #c9a84c; --green: #3db87a; --red: #e0645a;
+    }
+    body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; padding: 2rem 1rem 4rem; }
+    main { max-width: 820px; margin: 0 auto; }
+    h1 { font-size: 1.8rem; margin-bottom: .3rem; }
+    .sub { color: var(--muted); margin-bottom: 1.5rem; }
+    .box { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 1.2rem; }
+    .box h2 { font-size: 1rem; color: var(--gold); margin-bottom: .5rem; }
+    .box ol { padding-left: 1.2rem; color: var(--muted); font-size: .92rem; }
+    .box li { margin-bottom: .25rem; }
+    code { background: #1d1f27; padding: 1px 6px; border-radius: 4px; font-size: .88em; color: var(--ink); }
+    #status { border-radius: 12px; padding: 1rem 1.3rem; margin-bottom: 1.5rem; font-weight: 600; }
+    #status.ok { background: rgba(61,184,122,.1); border: 1px solid rgba(61,184,122,.35); color: var(--green); }
+    #status.err { background: rgba(224,100,90,.1); border: 1px solid rgba(224,100,90,.4); color: var(--red); }
+    #status ul { margin: .5rem 0 0 1.2rem; font-weight: 400; font-size: .92rem; }
+    .sec-title { margin: 1.6rem 0 .6rem; padding: .3rem .8rem; border-left: 3px solid var(--gold); color: var(--gold); font-weight: 600; }
+    .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: .8rem 1rem; margin-bottom: .6rem; font-size: .93rem; }
+    .q .qt { margin-bottom: .4rem; }
+    .q .n { color: var(--gold); font-weight: 700; margin-right: .3rem; }
+    .q .o { color: var(--muted); padding-left: .6rem; }
+    .q .o.right { color: var(--green); font-weight: 600; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>📄 File đề kiểm tra</h1>
+  <p class="sub">Đây là nơi duy nhất cần sửa khi muốn thay đề. Các trang khác chỉ lo giao diện và tự đọc đề từ file này.</p>
+
+  <div class="box">
+    <h2>Cách thay đề</h2>
+    <ol>
+      <li>Mở file này bằng trình soạn thảo, sửa khối <code>const EXAM = { ... }</code> ngay bên dưới.</li>
+      <li>Mỗi câu hỏi nằm trên một dòng; <code>ans</code> là chữ cái của đáp án đúng ("A", "B", "C" hoặc "D").</li>
+      <li>Số thứ tự câu tự đánh theo vị trí, không cần gõ "Question 1." vào nội dung.</li>
+      <li>Chỉ viết chữ thường, đừng chèn thẻ HTML hay ký tự &lt; &gt; vào nội dung.</li>
+      <li>Lưu file rồi mở lại trang này: ô bên dưới báo xanh là đề hợp lệ, báo đỏ sẽ chỉ rõ câu nào sai.</li>
+    </ol>
+  </div>
+
+  <div id="status"></div>
+  <div id="preview"></div>
+</main>
+
+<!-- ============================================================
+     KHỐI ĐỀ — CHỈ SỬA TRONG KHỐI NÀY
+     ============================================================ -->
+<script id="exam-data">
+const EXAM = {
+  // ---- Thông tin chung (hiện ở trang chủ và đầu các trang làm bài) ----
+  subject: "Tiếng Anh",
+  grade: "Lớp 11",
+  topics: ["phát âm", "trọng âm", "từ vựng", "ngữ pháp"],
+  minutes: 15,           // thời gian làm trọn bộ đề (phút)
+  // randomCount: 10,    // (tuỳ chọn) số câu mỗi lượt ở chế độ ngẫu nhiên, mặc định 10
+  // pickMax: 20,        // (tuỳ chọn) số câu tối đa ở chế độ tự chọn, mặc định 20
+
+  // ---- Các phần thi ----
+  // id: mã phần (các câu hỏi bên dưới trỏ về đây bằng "sec")
+  // label: tên ngắn hiện ở thanh tiến độ | hint: gợi ý thêm sau đề (có thể để "")
+  // instruction: dòng yêu cầu hiện ở đầu phần trong trang làm toàn bộ
+  sections: [
+    { id: "I",   label: "Phần I – Phát âm",    hint: "Chọn từ phát âm KHÁC",
+      instruction: "I. Chọn từ có phần gạch chân phát âm khác với ba từ còn lại." },
+    { id: "II",  label: "Phần II – Trọng âm",  hint: "Chọn từ có trọng âm chính KHÁC",
+      instruction: "II. Chọn từ có trọng âm chính khác với ba từ còn lại." },
+    { id: "III", label: "Phần III – Ngữ pháp", hint: "",
+      instruction: "III. Chọn đáp án đúng nhất để hoàn thành câu." }
+  ],
+
+  // ---- Câu hỏi: mỗi câu một dòng, số thứ tự (Question 1, 2, ...) tự đánh theo thứ tự ----
+  // sec: mã phần | q: nội dung câu (có thể để "") | opts: các đáp án | ans: chữ cái đáp án đúng
+  questions: [
+    // ===== PHẦN I =====
+    { sec: "I", q: "Phần gạch chân: ch", opts: ["chest", "teacher", "chef", "watch"], ans: "C" },  //  1
+    { sec: "I", q: "Phần gạch chân: oo", opts: ["boost", "book", "cook", "look"], ans: "A" },  //  2
+    { sec: "I", q: "Phần gạch chân: ou", opts: ["sound", "ground", "wound", "pound"], ans: "C" },  //  3
+    { sec: "I", q: "Phần gạch chân: i", opts: ["mineral", "meditate", "arthritis", "limit"], ans: "C" },  //  4
+    { sec: "I", q: "Phần gạch chân: o", opts: ["cyborg", "portion", "organise", "hologram"], ans: "C" },  //  5
+
+    // ===== PHẦN II =====
+    { sec: "II", q: "", opts: ["diabetes", "expectancy", "memorial", "bacteria"], ans: "A" },  //  6
+    { sec: "II", q: "", opts: ["remedy", "mineral", "nutrient", "infection"], ans: "D" },  //  7
+    { sec: "II", q: "", opts: ["travel", "reduce", "provide", "allow"], ans: "A" },  //  8
+    { sec: "II", q: "", opts: ["balance", "lifestyle", "hunger", "obese"], ans: "D" },  //  9
+    { sec: "II", q: "", opts: ["lifestyle", "wellness", "treadmill", "replace"], ans: "D" },  // 10
+
+    // ===== PHẦN III =====
+    { sec: "III", q: "I don't know why he hangs __________ with James, they've got nothing in common.", opts: ["off", "in", "out", "on"], ans: "C" },  // 11
+    { sec: "III", q: "Sleep and the immune __________ are obviously connected.", opts: ["system", "construction", "instruction", "net"], ans: "A" },  // 12
+    { sec: "III", q: "This win could prove to be a historic turning __________ in the fortunes of the team.", opts: ["event", "score", "mark", "point"], ans: "D" },  // 13
+    { sec: "III", q: "__________ often clears up with a change in diet.", opts: ["Scars", "Acne", "Burns", "Toothache"], ans: "B" },  // 14
+    { sec: "III", q: "In my view, he __________ peel the potatoes before mashing them and mixing in the butter and herbs.", opts: ["have to", "should", "need", "mustn't"], ans: "B" },  // 15
+    { sec: "III", q: "You __________ take the bus - it's the easiest way to get there.", opts: ["don't need to", "will", "can't", "should"], ans: "D" },  // 16
+    { sec: "III", q: "You __________ to pay for the tickets in advance.", opts: ["needn't", "had better not", "mustn't", "don't have"], ans: "D" },  // 17
+    { sec: "III", q: "Passengers __________ undo their seat belts until the signs have been switched off.", opts: ["mustn't", "don't have to", "shouldn't", "had better not"], ans: "A" },  // 18
+    { sec: "III", q: "They had to survive on a __________ of insects and berries when they got lost in a jungle.", opts: ["drink", "food", "diet", "meal"], ans: "C" },  // 19
+    { sec: "III", q: "He's __________ good shape for someone who had surgery six months ago.", opts: ["in", "on", "off", "about"], ans: "A" },  // 20
+    { sec: "III", q: "Yoga is said to __________ the wellness of the mind and body.", opts: ["promote", "manage", "take up", "track"], ans: "A" },  // 21
+    { sec: "III", q: "This recipe for chicken porridge will be enough for four __________.", opts: ["parts", "servings", "pieces", "sections"], ans: "B" },  // 22
+    { sec: "III", q: "Please join me in __________ Luke on an outstanding season.", opts: ["congratulating", "praising", "blaming", "thanking"], ans: "A" },  // 23
+    { sec: "III", q: "No one could ever accuse this government __________ not caring about the poor.", opts: ["for", "in", "of", "on"], ans: "C" },  // 24
+    { sec: "III", q: "He categorically denied __________ in an armed robbery.", opts: ["having involved", "to being involved", "involving", "having been involved"], ans: "D" },  // 25
+    { sec: "III", q: "We stood on the bridge __________ the two halves of the city.", opts: ["connected", "to be connected", "to connect", "connecting"], ans: "D" },  // 26
+    { sec: "III", q: "Pink Star was the only pink diamond __________ by De Beers in 1999 in South Africa.", opts: ["to be mined", "mined", "being mined", "mining"], ans: "A" },  // 27
+    { sec: "III", q: "The car had carried him 500 miles before it broke __________.", opts: ["in", "up", "down", "off"], ans: "C" },  // 28
+    { sec: "III", q: "While cleaning staff are busy __________ on one floor, they may suddenly need to be directed to another room.", opts: ["work", "to work", "working", "worked"], ans: "C" },  // 29
+    { sec: "III", q: "I'm __________ some art classes at the moment.", opts: ["conducting", "taking", "carrying", "putting"], ans: "B" },  // 30
+    { sec: "III", q: "The writer suffered __________ ill health for most of his life.", opts: ["about", "in", "from", "of"], ans: "C" },  // 31
+    { sec: "III", q: "Try drinking ginger tea before travelling if you suffer __________ motion sickness.", opts: ["of", "from", "with", "on"], ans: "B" },  // 32
+    { sec: "III", q: "It's common knowledge that you need to cut __________ salt, sugar and fatty foods to lose weight.", opts: ["out of", "down with", "up with", "down on"], ans: "D" },  // 33
+    { sec: "III", q: "__________ is using digital technology to hurt someone else. It can include sending embarrassing videos or spreading rumours online.", opts: ["Cyberbullying", "Depression", "Racism", "Crime"], ans: "A" },  // 34
+    { sec: "III", q: "The piano __________ at the moment belongs to my grandfather.", opts: ["mended", "being mended", "to be mended", "mending"], ans: "B" },  // 35
+    { sec: "III", q: "Turn off the light after leaving the room, __________?", opts: ["shall we", "will you", "may I", "won't you"], ans: "D" },  // 36
+    { sec: "III", q: "__________ we use more solar energy, the air will become cleaner and our health will be better.", opts: ["Unless", "As", "If", "Though"], ans: "C" },  // 37
+    { sec: "III", q: "Visitors __________ enter the operating room.", opts: ["must", "have to", "mustn't", "don't have to"], ans: "C" },  // 38
+    { sec: "III", q: "I think flying cars __________ a common mode of transportation in cities in the future.", opts: ["will become", "becomes", "becoming", "is going to become"], ans: "A" },  // 39
+    { sec: "III", q: "He has some difficulty __________ people when they speak softly.", opts: ["heard", "hearing", "to hear", "hears"], ans: "B" },  // 40
+    { sec: "III", q: "__________ the bottles, Mike poured the drinks for everyone.", opts: ["To open", "to have opened", "being opened", "having opened"], ans: "D" },  // 41
+    { sec: "III", q: "Look at those loose solar panels! They __________ off the roof.", opts: ["will fall", "fall", "are going to fall", "will be fall"], ans: "C" },  // 42
+    { sec: "III", q: "In the future, __________ roads will inform drivers about traffic conditions.", opts: ["3D printed", "digital", "moving", "floating"], ans: "B" },  // 43
+    { sec: "III", q: "Some people experience __________ from the locals when they move to a new country.", opts: ["unemployment", "disease", "racism", "war"], ans: "C" },  // 44
+    { sec: "III", q: "John has bad hay fever now; he also often gets a __________ nose in the winter.", opts: ["runny", "swollen", "sneezing", "bruised"], ans: "A" },  // 45
+    { sec: "III", q: "Solar windows __________ energy from the sun.", opts: ["bring", "provide", "produce", "need"], ans: "C" },  // 46
+    { sec: "III", q: "It's important to __________ laws to ensure equal opportunities for all the people despite their gender.", opts: ["pass", "offer", "provide", "give"], ans: "A" },  // 47
+    { sec: "III", q: "Andy wants to be a __________ trainer when he leaves school.", opts: ["wellness", "lifestyle", "personal", "healthy"], ans: "C" },  // 48
+    { sec: "III", q: "Ann is coughing a lot because she has a __________.", opts: ["sore throat", "chest infection", "hay fever", "rash"], ans: "B" },  // 49
+    { sec: "III", q: "Ben has decided to __________ sugar in order to lose some weight.", opts: ["cut down on", "eat", "give up", "drink"], ans: "A" },  // 50
+  ]
+};
+</script>
+<!-- ============================ HẾT KHỐI ĐỀ ============================ -->
+
+<script src="exam-loader.js"></script>
+<script>
+(function () {
+  var inFrame = window.parent !== window;
+
+  function send(msg) {
+    try { window.parent.postMessage(msg, '*'); return true; } catch (e) { return false; }
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function showErrors(list) {
+    var s = document.getElementById('status');
+    s.className = 'err';
+    s.textContent = '✗ Đề chưa hợp lệ, cần sửa:';
+    var ul = el('ul');
+    list.forEach(function (m) { ul.appendChild(el('li', null, m)); });
+    s.appendChild(ul);
+  }
+
+  // Lỗi cú pháp (thiếu dấu phẩy, thiếu ngoặc...) làm khối EXAM không chạy được
+  if (typeof EXAM === 'undefined') {
+    var msg = 'File đề bị lỗi cú pháp (thường là thiếu dấu phẩy, thừa/thiếu ngoặc hoặc dấu nháy). ' +
+              'Bấm F12, chọn thẻ Console để xem dòng bị lỗi.';
+    showErrors([msg]);
+    if (inFrame) send({ type: 'exam-error', message: msg });
+    return;
+  }
+  if (typeof ExamLoader === 'undefined') {
+    showErrors(['Không tìm thấy file exam-loader.js cùng thư mục.']);
+    if (inFrame) send({ type: 'exam-error', message: 'Không tìm thấy file exam-loader.js cùng thư mục.' });
+    return;
+  }
+
+  // Khi được trang giao diện mở trong khung ẩn: gửi đề về cho trang đó
+  function sendExam() {
+    if (!send({ type: 'exam-data', exam: EXAM })) {
+      send({ type: 'exam-error', message: 'Không gửi được dữ liệu đề (đề chứa giá trị không phải chữ/số/danh sách).' });
+    }
+  }
+  if (inFrame) {
+    sendExam();
+    window.addEventListener('message', function (ev) {
+      if (ev.data && ev.data.type === 'exam-request') sendExam();
+    });
+  }
+
+  // Khi mở trực tiếp: kiểm tra đề và hiện bản xem trước
+  var r = ExamLoader.normalize(EXAM);
+  if (r.errors.length) { showErrors(r.errors); return; }
+
+  var exam = r.exam;
+  var s = document.getElementById('status');
+  s.className = 'ok';
+  s.textContent = '✓ Đề hợp lệ: ' + exam.total + ' câu · ' + exam.sectionCount + ' phần · ' + exam.minutes + ' phút';
+
+  var preview = document.getElementById('preview');
+  exam.sections.forEach(function (sec) {
+    var qs = exam.questions.filter(function (q) { return q.sec === sec.id; });
+    if (!qs.length) return;
+    preview.appendChild(el('div', 'sec-title', sec.instruction || sec.label));
+    qs.forEach(function (q) {
+      var card = el('div', 'q');
+      var t = el('div', 'qt');
+      t.appendChild(el('span', 'n', 'Q' + q.n));
+      t.appendChild(document.createTextNode(q.q || sec.hint || ''));
+      card.appendChild(t);
+      q.opts.forEach(function (o, i) {
+        var right = i === q.ans;
+        card.appendChild(el('div', 'o' + (right ? ' right' : ''), ExamLoader.LETTERS[i] + '. ' + o + (right ? '  ✓' : '')));
+      });
+      preview.appendChild(card);
+    });
+  });
+})();
+</script>
+</body>
+</html>

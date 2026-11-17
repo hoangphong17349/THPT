@@ -235,8 +235,8 @@
 <body>
 
 <header>
-  <h1>📝 Bài Trắc Nghiệm Tiếng Anh</h1>
-  <p>50 câu hỏi &nbsp;·&nbsp; Phát âm, Trọng âm, Từ vựng & Ngữ pháp</p>
+  <h1>📝 Bài Trắc Nghiệm <span data-fill="subject">…</span></h1>
+  <p data-fill="subtitle">…</p>
 </header>
 
 <div class="quiz-container" id="quizContainer"></div>
@@ -245,74 +245,18 @@
   <div class="progress-bar-wrap" style="max-width:780px;width:100%">
     <div class="progress-bar-fill" id="progressFill"></div>
   </div>
-  <div class="progress-label" id="progressLabel">0 / 50 câu đã trả lời</div>
+  <div class="progress-label" id="progressLabel"></div>
   <button class="btn-check" onclick="checkAll()">✅ Kiểm tra tất cả</button>
   <button class="btn-reset" onclick="resetAll()">🔄 Làm lại</button>
   <div id="score-display"></div>
 </div>
 
+<script src="exam-loader.js"></script>
 <script>
-const questions = [
-  // SECTION I – Pronunciation
-  { section: "I. Chọn từ có phần gạch chân phát âm khác với ba từ còn lại.", q: "Question 1. Phần gạch chân: ch", opts: ["chest", "teacher", "chef", "watch"], ans: 2 },
-  { q: "Question 2. Phần gạch chân: oo", opts: ["boost", "book", "cook", "look"], ans: 0 },
-  { q: "Question 3. Phần gạch chân: ou", opts: ["sound", "ground", "wound", "pound"], ans: 2 },
-  { q: "Question 4. Phần gạch chân: i", opts: ["mineral", "meditate", "arthritis", "limit"], ans: 2 },
-  { q: "Question 5. Phần gạch chân: o", opts: ["cyborg", "portion", "organise", "hologram"], ans: 2 },
-
-  // SECTION II – Stress
-  { section: "II. Chọn từ có trọng âm chính khác với ba từ còn lại.", q: "Question 6.", opts: ["diabetes", "expectancy", "memorial", "bacteria"], ans: 0 },
-  { q: "Question 7.", opts: ["remedy", "mineral", "nutrient", "infection"], ans: 3 },
-  { q: "Question 8.", opts: ["travel", "reduce", "provide", "allow"], ans: 0 },
-  { q: "Question 9.", opts: ["balance", "lifestyle", "hunger", "obese"], ans: 3 },
-  { q: "Question 10.", opts: ["lifestyle", "wellness", "treadmill", "replace"], ans: 3 },
-
-  // SECTION III – Grammar & Vocabulary
-  { section: "III. Chọn đáp án đúng nhất để hoàn thành câu.", q: "Question 11. I don't know why he hangs __________ with James, they've got nothing in common.", opts: ["off", "in", "out", "on"], ans: 2 },
-  { q: "Question 12. Sleep and the immune __________ are obviously connected.", opts: ["system", "construction", "instruction", "net"], ans: 0 },
-  { q: "Question 13. This win could prove to be a historic turning __________ in the fortunes of the team.", opts: ["event", "score", "mark", "point"], ans: 3 },
-  { q: "Question 14. __________ often clears up with a change in diet.", opts: ["Scars", "Acne", "Burns", "Toothache"], ans: 1 },
-  { q: "Question 15. In my view, he __________ peel the potatoes before mashing them and mixing in the butter and herbs.", opts: ["have to", "should", "need", "mustn't"], ans: 1 },
-  { q: "Question 16. You __________ take the bus - it's the easiest way to get there.", opts: ["don't need to", "will", "can't", "should"], ans: 3 },
-  { q: "Question 17. You __________ to pay for the tickets in advance.", opts: ["needn't", "had better not", "mustn't", "don't have"], ans: 3 },
-  { q: "Question 18. Passengers __________ undo their seat belts until the signs have been switched off.", opts: ["mustn't", "don't have to", "shouldn't", "had better not"], ans: 0 },
-  { q: "Question 19. They had to survive on a __________ of insects and berries when they got lost in a jungle.", opts: ["drink", "food", "diet", "meal"], ans: 2 },
-  { q: "Question 20. He's __________ good shape for someone who had surgery six months ago.", opts: ["in", "on", "off", "about"], ans: 0 },
-  { q: "Question 21. Yoga is said to __________ the wellness of the mind and body.", opts: ["promote", "manage", "take up", "track"], ans: 0 },
-  { q: "Question 22. This recipe for chicken porridge will be enough for four __________.", opts: ["parts", "servings", "pieces", "sections"], ans: 1 },
-  { q: "Question 23. Please join me in __________ Luke on an outstanding season.", opts: ["congratulating", "praising", "blaming", "thanking"], ans: 0 },
-  { q: "Question 24. No one could ever accuse this government __________ not caring about the poor.", opts: ["for", "in", "of", "on"], ans: 2 },
-  { q: "Question 25. He categorically denied __________ in an armed robbery.", opts: ["having involved", "to being involved", "involving", "having been involved"], ans: 3 },
-  { q: "Question 26. We stood on the bridge __________ the two halves of the city.", opts: ["connected", "to be connected", "to connect", "connecting"], ans: 3 },
-  { q: "Question 27. Pink Star was the only pink diamond __________ by De Beers in 1999 in South Africa.", opts: ["to be mined", "mined", "being mined", "mining"], ans: 0 },
-  { q: "Question 28. The car had carried him 500 miles before it broke __________.", opts: ["in", "up", "down", "off"], ans: 2 },
-  { q: "Question 29. While cleaning staff are busy __________ on one floor, they may suddenly need to be directed to another room.", opts: ["work", "to work", "working", "worked"], ans: 2 },
-  { q: "Question 30. I'm __________ some art classes at the moment.", opts: ["conducting", "taking", "carrying", "putting"], ans: 1 },
-  { q: "Question 31. The writer suffered __________ ill health for most of his life.", opts: ["about", "in", "from", "of"], ans: 2 },
-  { q: "Question 32. Try drinking ginger tea before travelling if you suffer __________ motion sickness.", opts: ["of", "from", "with", "on"], ans: 1 },
-  { q: "Question 33. It's common knowledge that you need to cut __________ salt, sugar and fatty foods to lose weight.", opts: ["out of", "down with", "up with", "down on"], ans: 3 },
-  { q: "Question 34. __________ is using digital technology to hurt someone else. It can include sending embarrassing videos or spreading rumours online.", opts: ["Cyberbullying", "Depression", "Racism", "Crime"], ans: 0 },
-  { q: "Question 35. The piano __________ at the moment belongs to my grandfather.", opts: ["mended", "being mended", "to be mended", "mending"], ans: 1 },
-  { q: "Question 36. Turn off the light after leaving the room, __________?", opts: ["shall we", "will you", "may I", "won't you"], ans: 3 },
-  { q: "Question 37. __________ we use more solar energy, the air will become cleaner and our health will be better.", opts: ["Unless", "As", "If", "Though"], ans: 2 },
-  { q: "Question 38. Visitors __________ enter the operating room.", opts: ["must", "have to", "mustn't", "don't have to"], ans: 2 },
-  { q: "Question 39. I think flying cars __________ a common mode of transportation in cities in the future.", opts: ["will become", "becomes", "becoming", "is going to become"], ans: 0 },
-  { q: "Question 40. He has some difficulty __________ people when they speak softly.", opts: ["heard", "hearing", "to hear", "hears"], ans: 1 },
-  { q: "Question 41. __________ the bottles, Mike poured the drinks for everyone.", opts: ["To open", "to have opened", "being opened", "having opened"], ans: 3 },
-  { q: "Question 42. Look at those loose solar panels! They __________ off the roof.", opts: ["will fall", "fall", "are going to fall", "will be fall"], ans: 2 },
-  { q: "Question 43. In the future, __________ roads will inform drivers about traffic conditions.", opts: ["3D printed", "digital", "moving", "floating"], ans: 1 },
-  { q: "Question 44. Some people experience __________ from the locals when they move to a new country.", opts: ["unemployment", "disease", "racism", "war"], ans: 2 },
-  { q: "Question 45. John has bad hay fever now; he also often gets a __________ nose in the winter.", opts: ["runny", "swollen", "sneezing", "bruised"], ans: 0 },
-  { q: "Question 46. Solar windows __________ energy from the sun.", opts: ["bring", "provide", "produce", "need"], ans: 2 },
-  { q: "Question 47. It's important to __________ laws to ensure equal opportunities for all the people despite their gender.", opts: ["pass", "offer", "provide", "give"], ans: 0 },
-  { q: "Question 48. Andy wants to be a __________ trainer when he leaves school.", opts: ["wellness", "lifestyle", "personal", "healthy"], ans: 2 },
-  { q: "Question 49. Ann is coughing a lot because she has a __________.", opts: ["sore throat", "chest infection", "hay fever", "rash"], ans: 1 },
-  { q: "Question 50. Ben has decided to __________ sugar in order to lose some weight.", opts: ["cut down on", "eat", "give up", "drink"], ans: 0 },
-];
+let questions = [];   // được nạp từ de-kiem-tra.html (xem phần khởi động ở cuối file)
 
 const optionLetters = ['A', 'B', 'C', 'D'];
 const container = document.getElementById('quizContainer');
-let answered = new Array(questions.length).fill(false);
 
 function buildQuiz() {
   container.innerHTML = '';
@@ -418,8 +362,24 @@ function resetAll() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-buildQuiz();
-updateProgress();
+/* ── KHỞI ĐỘNG: nạp đề rồi dựng giao diện ── */
+ExamLoader.load().then(exam => {
+  ExamLoader.fill(exam);
+  let lastSec = null;
+  questions = exam.questions.map(x => {
+    const sec = exam.sectionById[x.sec];
+    const item = {
+      q: 'Question ' + x.n + '.' + (x.q ? ' ' + x.q : ''),
+      opts: x.opts,
+      ans: x.ans
+    };
+    if (x.sec !== lastSec) item.section = sec.instruction || sec.label;
+    lastSec = x.sec;
+    return item;
+  });
+  buildQuiz();
+  updateProgress();
+}).catch(ExamLoader.fail);
 </script>
 </body>
 </html>

@@ -399,14 +399,14 @@
 
 <!-- ── START SCREEN ── -->
 <div id="screen-start">
-  <div class="badge">Tiếng Anh</div>
+  <div class="badge" data-fill="subject">…</div>
   <h1>Trắc Nghiệm<br>Ngẫu Nhiên</h1>
-  <p>Mỗi lượt chơi, hệ thống sẽ <strong>xáo ngẫu nhiên 10 câu</strong><br>từ bộ 50 câu hỏi. Chúc bạn làm bài tốt!</p>
+  <p>Mỗi lượt chơi, hệ thống sẽ <strong>xáo ngẫu nhiên <span data-fill="randomCount">…</span> câu</strong><br>từ bộ <span data-fill="total">…</span> câu hỏi. Chúc bạn làm bài tốt!</p>
 
   <div class="stats-row">
-    <div class="stat-box"><div class="num">50</div><div class="lbl">Tổng câu hỏi</div></div>
-    <div class="stat-box"><div class="num">10</div><div class="lbl">Câu mỗi lượt</div></div>
-    <div class="stat-box"><div class="num">3</div><div class="lbl">Phần thi</div></div>
+    <div class="stat-box"><div class="num" data-fill="total">…</div><div class="lbl">Tổng câu hỏi</div></div>
+    <div class="stat-box"><div class="num" data-fill="randomCount">…</div><div class="lbl">Câu mỗi lượt</div></div>
+    <div class="stat-box"><div class="num" data-fill="sections">…</div><div class="lbl">Phần thi</div></div>
   </div>
 
   <button class="btn-primary" onclick="startQuiz()">🎲 Bắt đầu ngẫu nhiên</button>
@@ -415,7 +415,7 @@
 <!-- ── QUIZ SCREEN ── -->
 <div id="screen-quiz">
   <div class="quiz-header">
-    <div class="q-counter">Câu <span id="q-num">1</span> / 10</div>
+    <div class="q-counter">Câu <span id="q-num">1</span> / <span id="q-total">…</span></div>
     <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
     <div class="section-chip" id="sec-chip">Phần I</div>
   </div>
@@ -461,65 +461,16 @@
   <div class="review-list" id="review-list" style="display:none"></div>
 </div>
 
+<script src="exam-loader.js"></script>
 <script>
-const ALL_QUESTIONS = [
-  { sec:"I", q:"Question 1. Phần gạch chân: ch — Chọn từ phát âm KHÁC.", opts:["chest","teacher","chef","watch"], ans:2 },
-  { sec:"I", q:"Question 2. Phần gạch chân: oo — Chọn từ phát âm KHÁC.", opts:["boost","book","cook","look"], ans:0 },
-  { sec:"I", q:"Question 3. Phần gạch chân: ou — Chọn từ phát âm KHÁC.", opts:["sound","ground","wound","pound"], ans:2 },
-  { sec:"I", q:"Question 4. Phần gạch chân: i — Chọn từ phát âm KHÁC.", opts:["mineral","meditate","arthritis","limit"], ans:2 },
-  { sec:"I", q:"Question 5. Phần gạch chân: o — Chọn từ phát âm KHÁC.", opts:["cyborg","portion","organise","hologram"], ans:2 },
-  { sec:"II", q:"Question 6. Chọn từ có trọng âm chính KHÁC.", opts:["diabetes","expectancy","memorial","bacteria"], ans:0 },
-  { sec:"II", q:"Question 7. Chọn từ có trọng âm chính KHÁC.", opts:["remedy","mineral","nutrient","infection"], ans:3 },
-  { sec:"II", q:"Question 8. Chọn từ có trọng âm chính KHÁC.", opts:["travel","reduce","provide","allow"], ans:0 },
-  { sec:"II", q:"Question 9. Chọn từ có trọng âm chính KHÁC.", opts:["balance","lifestyle","hunger","obese"], ans:3 },
-  { sec:"II", q:"Question 10. Chọn từ có trọng âm chính KHÁC.", opts:["lifestyle","wellness","treadmill","replace"], ans:3 },
-  { sec:"III", q:"Question 11. I don't know why he hangs __________ with James, they've got nothing in common.", opts:["off","in","out","on"], ans:2 },
-  { sec:"III", q:"Question 12. Sleep and the immune __________ are obviously connected.", opts:["system","construction","instruction","net"], ans:0 },
-  { sec:"III", q:"Question 13. This win could prove to be a historic turning __________ in the fortunes of the team.", opts:["event","score","mark","point"], ans:3 },
-  { sec:"III", q:"Question 14. __________ often clears up with a change in diet.", opts:["Scars","Acne","Burns","Toothache"], ans:1 },
-  { sec:"III", q:"Question 15. In my view, he __________ peel the potatoes before mashing them.", opts:["have to","should","need","mustn't"], ans:1 },
-  { sec:"III", q:"Question 16. You __________ take the bus - it's the easiest way to get there.", opts:["don't need to","will","can't","should"], ans:3 },
-  { sec:"III", q:"Question 17. You __________ to pay for the tickets in advance.", opts:["needn't","had better not","mustn't","don't have"], ans:3 },
-  { sec:"III", q:"Question 18. Passengers __________ undo their seat belts until the signs have been switched off.", opts:["mustn't","don't have to","shouldn't","had better not"], ans:0 },
-  { sec:"III", q:"Question 19. They had to survive on a __________ of insects and berries when lost in a jungle.", opts:["drink","food","diet","meal"], ans:2 },
-  { sec:"III", q:"Question 20. He's __________ good shape for someone who had surgery six months ago.", opts:["in","on","off","about"], ans:0 },
-  { sec:"III", q:"Question 21. Yoga is said to __________ the wellness of the mind and body.", opts:["promote","manage","take up","track"], ans:0 },
-  { sec:"III", q:"Question 22. This recipe for chicken porridge will be enough for four __________.", opts:["parts","servings","pieces","sections"], ans:1 },
-  { sec:"III", q:"Question 23. Please join me in __________ Luke on an outstanding season.", opts:["congratulating","praising","blaming","thanking"], ans:0 },
-  { sec:"III", q:"Question 24. No one could ever accuse this government __________ not caring about the poor.", opts:["for","in","of","on"], ans:2 },
-  { sec:"III", q:"Question 25. He categorically denied __________ in an armed robbery.", opts:["having involved","to being involved","involving","having been involved"], ans:3 },
-  { sec:"III", q:"Question 26. We stood on the bridge __________ the two halves of the city.", opts:["connected","to be connected","to connect","connecting"], ans:3 },
-  { sec:"III", q:"Question 27. Pink Star was the only pink diamond __________ by De Beers in 1999 in South Africa.", opts:["to be mined","mined","being mined","mining"], ans:0 },
-  { sec:"III", q:"Question 28. The car had carried him 500 miles before it broke __________.", opts:["in","up","down","off"], ans:2 },
-  { sec:"III", q:"Question 29. While cleaning staff are busy __________ on one floor, they may suddenly need to move.", opts:["work","to work","working","worked"], ans:2 },
-  { sec:"III", q:"Question 30. I'm __________ some art classes at the moment.", opts:["conducting","taking","carrying","putting"], ans:1 },
-  { sec:"III", q:"Question 31. The writer suffered __________ ill health for most of his life.", opts:["about","in","from","of"], ans:2 },
-  { sec:"III", q:"Question 32. Try drinking ginger tea before travelling if you suffer __________ motion sickness.", opts:["of","from","with","on"], ans:1 },
-  { sec:"III", q:"Question 33. You need to cut __________ salt, sugar and fatty foods to lose weight.", opts:["out of","down with","up with","down on"], ans:3 },
-  { sec:"III", q:"Question 34. __________ is using digital technology to hurt someone else, e.g. spreading rumours online.", opts:["Cyberbullying","Depression","Racism","Crime"], ans:0 },
-  { sec:"III", q:"Question 35. The piano __________ at the moment belongs to my grandfather.", opts:["mended","being mended","to be mended","mending"], ans:1 },
-  { sec:"III", q:"Question 36. Turn off the light after leaving the room, __________?", opts:["shall we","will you","may I","won't you"], ans:3 },
-  { sec:"III", q:"Question 37. __________ we use more solar energy, the air will become cleaner.", opts:["Unless","As","If","Though"], ans:2 },
-  { sec:"III", q:"Question 38. Visitors __________ enter the operating room.", opts:["must","have to","mustn't","don't have to"], ans:2 },
-  { sec:"III", q:"Question 39. I think flying cars __________ a common mode of transportation in cities in the future.", opts:["will become","becomes","becoming","is going to become"], ans:0 },
-  { sec:"III", q:"Question 40. He has some difficulty __________ people when they speak softly.", opts:["heard","hearing","to hear","hears"], ans:1 },
-  { sec:"III", q:"Question 41. __________ the bottles, Mike poured the drinks for everyone.", opts:["To open","to have opened","being opened","having opened"], ans:3 },
-  { sec:"III", q:"Question 42. Look at those loose solar panels! They __________ off the roof.", opts:["will fall","fall","are going to fall","will be fall"], ans:2 },
-  { sec:"III", q:"Question 43. In the future, __________ roads will inform drivers about traffic conditions.", opts:["3D printed","digital","moving","floating"], ans:1 },
-  { sec:"III", q:"Question 44. Some people experience __________ from the locals when they move to a new country.", opts:["unemployment","disease","racism","war"], ans:2 },
-  { sec:"III", q:"Question 45. John has bad hay fever; he also often gets a __________ nose in the winter.", opts:["runny","swollen","sneezing","bruised"], ans:0 },
-  { sec:"III", q:"Question 46. Solar windows __________ energy from the sun.", opts:["bring","provide","produce","need"], ans:2 },
-  { sec:"III", q:"Question 47. It's important to __________ laws to ensure equal opportunities for all people despite their gender.", opts:["pass","offer","provide","give"], ans:0 },
-  { sec:"III", q:"Question 48. Andy wants to be a __________ trainer when he leaves school.", opts:["wellness","lifestyle","personal","healthy"], ans:2 },
-  { sec:"III", q:"Question 49. Ann is coughing a lot because she has a __________.", opts:["sore throat","chest infection","hay fever","rash"], ans:1 },
-  { sec:"III", q:"Question 50. Ben has decided to __________ sugar in order to lose some weight.", opts:["cut down on","eat","give up","drink"], ans:0 },
-];
+let ALL_QUESTIONS = [];   // được nạp từ de-kiem-tra.html (xem phần khởi động ở cuối file)
 
 const LETTERS = ['A','B','C','D'];
-const SEC_LABELS = { "I": "Phần I – Phát âm", "II": "Phần II – Trọng âm", "III": "Phần III – Ngữ pháp" };
+let SEC_LABELS = {};
+let BATCH_SIZE = 10;     // số câu mỗi lượt (lấy từ đề)
 
-let batch = [];        // 10 shuffled questions
-let current = 0;       // current index 0–9
+let batch = [];        // các câu đã xáo của lượt hiện tại
+let current = 0;       // vị trí câu hiện tại (bắt đầu từ 0)
 let answered = false;
 let userAnswers = [];  // store {chosen, correct} for review
 let reviewVisible = false;
@@ -534,7 +485,8 @@ function shuffle(arr) {
 }
 
 function startQuiz() {
-  batch = shuffle(ALL_QUESTIONS).slice(0, 10);
+  if (!ALL_QUESTIONS.length) return;   // đề chưa nạp xong
+  batch = shuffle(ALL_QUESTIONS).slice(0, BATCH_SIZE);
   current = 0;
   userAnswers = [];
   reviewVisible = false;
@@ -548,7 +500,8 @@ function renderQuestion() {
   const item = batch[current];
 
   document.getElementById('q-num').textContent = current + 1;
-  document.getElementById('prog-fill').style.width = `${((current + 1) / 10) * 100}%`;
+  document.getElementById('q-total').textContent = batch.length;
+  document.getElementById('prog-fill').style.width = `${((current + 1) / batch.length) * 100}%`;
   document.getElementById('sec-chip').textContent = SEC_LABELS[item.sec] || item.sec;
   document.getElementById('q-text').textContent = item.q;
 
@@ -558,7 +511,7 @@ function renderQuestion() {
 
   const btnNext = document.getElementById('btn-next');
   btnNext.style.display = 'none';
-  btnNext.textContent = current < 9 ? 'Câu tiếp theo →' : 'Xem kết quả 🏆';
+  btnNext.textContent = current < batch.length - 1 ? 'Câu tiếp theo →' : 'Xem kết quả 🏆';
 
   const opts = document.getElementById('options');
   opts.innerHTML = '';
@@ -605,7 +558,7 @@ function selectAnswer(chosen) {
 
 function nextQuestion() {
   current++;
-  if (current < 10) {
+  if (current < batch.length) {
     renderQuestion();
   } else {
     showResult();
@@ -615,8 +568,9 @@ function nextQuestion() {
 function showResult() {
   show('screen-result');
 
+  const total = userAnswers.length;
   const correct = userAnswers.filter(a => a.chosen === a.ans).length;
-  const pct = Math.round((correct / 10) * 100);
+  const pct = Math.round((correct / total) * 100);
 
   // ring animation
   const ring = document.getElementById('ring-fill');
@@ -627,13 +581,13 @@ function showResult() {
 
   document.getElementById('ring-pct').textContent = pct + '%';
   document.getElementById('r-correct').textContent = correct;
-  document.getElementById('r-wrong').textContent = 10 - correct;
+  document.getElementById('r-wrong').textContent = total - correct;
   document.getElementById('r-pct').textContent = pct + '%';
 
   const titles = ['Cần cố gắng thêm! 💪', 'Khá ổn! Tiếp tục nhé 👍', 'Tốt lắm! 🎉', 'Xuất sắc! 🏆'];
   const ti = pct < 40 ? 0 : pct < 60 ? 1 : pct < 90 ? 2 : 3;
   document.getElementById('result-title').textContent = titles[ti];
-  document.getElementById('result-sub').textContent = `Bạn trả lời đúng ${correct}/10 câu trong lượt này.`;
+  document.getElementById('result-sub').textContent = `Bạn trả lời đúng ${correct}/${total} câu trong lượt này.`;
 }
 
 function toggleReview() {
@@ -669,6 +623,15 @@ function show(id) {
   if (id === 'screen-result') document.getElementById('screen-result').style.flexDirection = 'column';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+/* ── KHỞI ĐỘNG: nạp đề ── */
+ExamLoader.load().then(exam => {
+  ExamLoader.fill(exam);
+  ALL_QUESTIONS = exam.questions.map(x => ({ sec: x.sec, q: x.text, opts: x.opts, ans: x.ans }));
+  SEC_LABELS = {};
+  exam.sections.forEach(sec => { SEC_LABELS[sec.id] = sec.label; });
+  BATCH_SIZE = exam.randomCount;
+}).catch(ExamLoader.fail);
 </script>
 </body>
 </html>

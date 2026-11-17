@@ -303,12 +303,12 @@
 <div class="wrapper">
 
   <div class="hero">
-    <div class="eyebrow"><span></span>Tiếng Anh Lớp 11<span></span></div>
+    <div class="eyebrow"><span></span><span data-fill="eyebrow">…</span><span></span></div>
     <h1>
       <div class="line1">Bộ đề</div>
       <div class="line2">Trắc Nghiệm</div>
     </h1>
-    <p class="hero-desc">Luyện tập phát âm, trọng âm, từ vựng và ngữ pháp với 50 câu hỏi được biên soạn kỹ lưỡng.</p>
+    <p class="hero-desc" data-fill="intro">…</p>
   </div>
 
   <div class="divider"></div>
@@ -319,12 +319,12 @@
     <a class="card card-full" href="full.html">
       <div class="card-icon">📋</div>
       <div class="card-tag">Đầy đủ</div>
-      <div class="card-title">Làm toàn bộ<br>50 câu</div>
-      <div class="card-desc">Hoàn thành tất cả 50 câu hỏi trong một lượt. Kiểm tra kết quả một lần duy nhất ở cuối bài.</div>
+      <div class="card-title">Làm toàn bộ<br><span data-fill="total">…</span> câu</div>
+      <div class="card-desc">Hoàn thành tất cả <span data-fill="total">…</span> câu hỏi trong một lượt. Kiểm tra kết quả một lần duy nhất ở cuối bài.</div>
       <div class="card-meta">
-        <div class="meta-item"><span class="meta-num">50</span><span class="meta-lbl">Câu hỏi</span></div>
-        <div class="meta-item"><span class="meta-num">3</span><span class="meta-lbl">Phần thi</span></div>
-        <div class="meta-item"><span class="meta-num">~15'</span><span class="meta-lbl">Thời gian</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="total">…</span><span class="meta-lbl">Câu hỏi</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="sections">…</span><span class="meta-lbl">Phần thi</span></div>
+        <div class="meta-item"><span class="meta-num">~<span data-fill="minutes">…</span>'</span><span class="meta-lbl">Thời gian</span></div>
       </div>
       <div class="card-arrow">→</div>
     </a>
@@ -333,12 +333,12 @@
     <a class="card card-random" href="random.html">
       <div class="card-icon">🎲</div>
       <div class="card-tag">Ngẫu nhiên</div>
-      <div class="card-title">Xáo ngẫu nhiên<br>10 câu</div>
-      <div class="card-desc">Mỗi lượt chọn ngẫu nhiên 10 câu từ bộ 50. Phản hồi tức thì sau mỗi câu trả lời.</div>
+      <div class="card-title">Xáo ngẫu nhiên<br><span data-fill="randomCount">…</span> câu</div>
+      <div class="card-desc">Mỗi lượt chọn ngẫu nhiên <span data-fill="randomCount">…</span> câu từ bộ <span data-fill="total">…</span>. Phản hồi tức thì sau mỗi câu trả lời.</div>
       <div class="card-meta">
-        <div class="meta-item"><span class="meta-num">10</span><span class="meta-lbl">Câu / lượt</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="randomCount">…</span><span class="meta-lbl">Câu / lượt</span></div>
         <div class="meta-item"><span class="meta-num">∞</span><span class="meta-lbl">Lượt chơi</span></div>
-        <div class="meta-item"><span class="meta-num">~3'</span><span class="meta-lbl">Thời gian</span></div>
+        <div class="meta-item"><span class="meta-num">~<span data-fill="randomMinutes">…</span>'</span><span class="meta-lbl">Thời gian</span></div>
       </div>
       <div class="card-arrow">→</div>
     </a>
@@ -348,10 +348,10 @@
       <div class="card-icon">✏️</div>
       <div class="card-tag">Tự chọn</div>
       <div class="card-title">Tự chọn câu<br>& xáo trộn</div>
-      <div class="card-desc">Tự tay chọn tối đa 20 câu bất kỳ, bấm OK và hệ thống sẽ xáo ngẫu nhiên thứ tự rồi bắt đầu.</div>
+      <div class="card-desc">Tự tay chọn tối đa <span data-fill="pickMax">…</span> câu bất kỳ, bấm OK và hệ thống sẽ xáo ngẫu nhiên thứ tự rồi bắt đầu.</div>
       <div class="card-meta">
-        <div class="meta-item"><span class="meta-num">20</span><span class="meta-lbl">Câu tối đa</span></div>
-        <div class="meta-item"><span class="meta-num">50</span><span class="meta-lbl">Nguồn câu</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="pickMax">…</span><span class="meta-lbl">Câu tối đa</span></div>
+        <div class="meta-item"><span class="meta-num" data-fill="total">…</span><span class="meta-lbl">Nguồn câu</span></div>
         <div class="meta-item"><span class="meta-num">∞</span><span class="meta-lbl">Lượt chơi</span></div>
       </div>
       <div class="card-arrow">→</div>
@@ -359,9 +359,14 @@
 
   </div>
 
-  <footer>© 2025 &nbsp;·&nbsp; Bộ đề Tiếng Anh &nbsp;·&nbsp; 50 câu hỏi</footer>
+  <footer>© 2025 &nbsp;·&nbsp; Bộ đề <span data-fill="subject">…</span> &nbsp;·&nbsp; <span data-fill="total">…</span> câu hỏi</footer>
 
 </div>
+
+<script src="exam-loader.js"></script>
+<script>
+  ExamLoader.load().then(ExamLoader.fill).catch(ExamLoader.fail);
+</script>
 
 </body>
 </html>
